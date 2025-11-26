@@ -5,7 +5,7 @@
     <title>Suno AI 프롬프트 빌더 (한국어 버전)</title>
     <style>
         /* Base Styles */
-        body { font-family: 'Segoe UI', 'Malgun Gothic', Arial, sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
         section { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
         h2 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-top: 0; }
@@ -22,12 +22,18 @@
             background-color: #f0f0f0; color: #6c757d; padding: 8px 14px; border-radius: 25px; 
             cursor: pointer; transition: all 0.2s; font-size: 14px; white-space: nowrap; 
             border: 1px solid #d4d4d4; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            display: inline-flex; 
+            /* Important: Need to use display: block/inline-block if not using the adjacent selector method correctly */
+            display: inline-flex; /* Use inline-flex for better centering if needed */
             align-items: center;
         }
 
         /* Hide the actual checkbox input */
         .checkbox-group input[type="checkbox"] { display: none; }
+        
+        /* * FIX/ENHANCEMENT: Use the JavaScript-toggled class for a reliable solution.
+         * The original CSS structure often relies on the input and label being adjacent siblings, 
+         * but here the input is nested. The following CSS and the JS below fix this.
+         */
         
         /* Style for the selected label (using the JS-toggled class on the label itself) */
         .checkbox-group label.checked-label { 
@@ -38,6 +44,11 @@
             box-shadow: 0 4px 12px rgba(220, 53, 69, 0.7); 
             transform: scale(1.03); 
         }
+
+        /* If you prefer to stick to the pure CSS method, use a structure where input and label are siblings:
+           (We will stick to the nested structure and use JS for safety) 
+        */
+
 
         /* Common Input/Select Style */
         input[type="text"], select { 
@@ -131,7 +142,7 @@
     <h1>✨ Suno AI 프롬프트 빌더 ✨</h1>
     
     <section id="style-selection">
-        <h2>1. 🎼 전체 음악 스타일 모듈 (Style of Music)</h2>
+        <h2>1. ? 전체 음악 스타일 모듈 (Style of Music)</h2>
         <span class="category-title">⭐ 장르 & 스타일 태그:</span>
         <div class="checkbox-group">
             <label><input type="checkbox" name="genre" value="팝"> 팝</label>
@@ -172,7 +183,7 @@
         
         <hr>
 
-        <span class="category-title">🗓️ 시대별 & 🌍 지역별 스타일:</span>
+        <span class="category-title">?️ 시대별 & ? 지역별 스타일:</span>
         <div class="checkbox-group">
             <label><input type="checkbox" name="era" value="80년대 신스웨이브"> 80년대 신스웨이브</label>
             <label><input type="checkbox" name="era" value="90년대 그런지"> 90년대 그런지</label>
@@ -192,7 +203,7 @@
 
         <hr>
 
-        <span class="category-title">🧠 감정적 무드 & 🔊 분위기/에너지 태그:</span>
+        <span class="category-title">? 감정적 무드 & ? 분위기/에너지 태그:</span>
         <div class="checkbox-group">
             <label><input type="checkbox" name="energy_intensity_overall" value="고에너지"> 고에너지</label>
             <label><input type="checkbox" name="energy_intensity_overall" value="저에너지"> 저에너지</label>
@@ -224,7 +235,7 @@
 
         <hr>
         
-        <span class="category-title">🎤 보컬 성별/유형 및 BPM 선택:</span>
+        <span class="category-title">? 보컬 성별/유형 및 BPM 선택:</span>
         <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
             <select id="overallVocalGender">
                 <option value="">-- 보컬 성별/유형 (선택 사항) --</option>
@@ -240,7 +251,7 @@
             <input type="text" id="overallBpm" placeholder="정확한 BPM 값 (예: 110)">
         </div>
 
-        <span class="category-title">🗣️ 추가 보컬 스타일/테크닉/특징:</span>
+        <span class="category-title">?️ 추가 보컬 스타일/테크닉/특징:</span>
         <div class="checkbox-group">
             <label><input type="checkbox" name="vocal_style_overall" value="파워풀한 보컬"> 파워풀한 보컬</label>
             <label><input type="checkbox" name="vocal_style_overall" value="속삭이는 보컬"> 속삭이는 보컬</label>
@@ -267,49 +278,49 @@
     <hr>
     
     <section>
-        <h2>2. 📝 곡 구조 및 섹션 상세 설정 모듈</h2>
+        <h2>2. ? 곡 구조 및 섹션 상세 설정 모듈</h2>
         <span class="category-title">원하는 곡 구조 템플릿 선택 (필수):</span>
         <select id="structureType" onchange="updateSectionDetails(this.value);">
             <option value="">-- 구조 유형을 선택하세요 --</option>
-            <optgroup label="--- 🎤 팝 음악 구조 ---">
+            <optgroup label="--- ? 팝 음악 구조 ---">
                 <option value="StandardPop">표준 팝 (Verse-Chorus-Bridge)</option>
                 <option value="HookFocusPop">훅 강조 팝 (코러스 먼저 시작)</option>
                 <option value="KPopDance">K-Pop/댄스 팝 (댄스 브레이크 포함)</option>
             </optgroup>
-            <optgroup label="--- 🎸 록 음악 구조 ---">
+            <optgroup label="--- ? 록 음악 구조 ---">
                 <option value="ClassicRock">클래식 록 (기타 솔로 포함)</option>
                 <option value="AlternativeGrunge">얼터너티브/그런지 (Soft-Loud 대비)</option>
                 <option value="ProgressiveRock">프로그레시브 록 (복잡한 간주)</option>
             </optgroup>
-            <optgroup label="--- 🎧 힙합/R&B 구조 ---">
+            <optgroup label="--- ? 힙합/R&B 구조 ---">
                 <option value="StandardHipHop">표준 힙합 (Verse-Hook)</option>
                 <option value="R&BSoul">R&B/소울 (애드립, 화음)</option>
                 <option value="TrapStreet">트랩/스트릿 (비트 드롭 강조)</option>
             </optgroup>
-            <optgroup label="--- 🔊 EDM/댄스 음악 구조 ---">
+            <optgroup label="--- ? EDM/댄스 음악 구조 ---">
                 <option value="HouseTechno">하우스/테크노 (빌드업 & 드롭)</option>
                 <option value="TranceDubstep">트랜스/덥스텝 (클라이맥스 드롭)</option>
                 <option value="LoFiAmbient">로파이/앰비언트 (반복 루프)</option>
             </optgroup>
-            <optgroup label="--- 🎷 재즈/블루스 구조 ---">
+            <optgroup label="--- ? 재즈/블루스 구조 ---">
                 <option value="StandardBlues">표준 블루스 (12마디, 즉흥 솔로)</option>
                 <option value="JazzStandard">재즈 스탠더드 (AABA 형식)</option>
             </optgroup>
-            <optgroup label="--- 🎻 시네마틱/클래식 구조 ---">
+            <optgroup label="--- ? 시네마틱/클래식 구조 ---">
                 <option value="CinematicScore">시네마틱 스코어 (긴장 & 클라이맥스)</option>
                 <option value="ModernClassical">현대 클래식 (악장 구분)</option>
             </optgroup>
-             <optgroup label="--- 💃 트로트 구조 확장 ---">
+             <optgroup label="--- ? 트로트 구조 확장 ---">
                 <option value="StandardTrot">표준 트로트 (간주 브레이크)</option>
                 <option value="DanceTrot">댄스 트로트</option>
                 <option value="SlowTrot">슬로우 트로트 (감성 발라드형)</option>
             </optgroup>
-             <optgroup label="--- 🎹 발라드 구조 확장 ---">
+             <optgroup label="--- ? 발라드 구조 확장 ---">
                 <option value="PowerBallad">파워 발라드 (전조, 최대 파워)</option>
                 <option value="R&BBallad">R&B 발라드 (보컬 하모니, 색소폰/로즈 간주)</option>
                 <option value="AcousticBallad">어쿠스틱 발라드 (단순, Verse 3)</option>
             </optgroup>
-            <optgroup label="--- 🌲 포크/컨트리/레게 구조 ---">
+            <optgroup label="--- ? 포크/컨트리/레게 구조 ---">
                 <option value="StandardFolk">표준 포크 (Verse 3 간주)</option>
                 <option value="BluegrassIrish">블루그래스/아이리시 (빠른 솔로, 브레이크다운)</option>
                 <option value="NarrativeCountry">내러티브 컨트리 (페달 스틸, 긴 이야기)</option>
@@ -319,7 +330,7 @@
         </select>
         <p id="structureDesc" style="margin-top: 5px; color: #555;">선택된 구조 특징: 구조 유형을 선택해 주세요.</p>
 
-        <span class="category-title" style="margin-top: 15px;">💡 섹션별 스타일 상세 설정 (콤보박스 + 다중 선택)</span>
+        <span class="category-title" style="margin-top: 15px;">? 섹션별 스타일 상세 설정 (콤보박스 + 다중 선택)</span>
         <div id="section-details-container">
             <p style="color: #a94442;">구조 유형을 선택하면 각 주요 섹션별 BPM, 무드, 악기, 보컬 톤 설정 필드가 나타납니다.</p>
         </div>
@@ -908,7 +919,7 @@
             container.className = 'instrument-multiselect';
             
             const title = document.createElement('h4');
-            title.textContent = '4. 🎸 악기 태그 (관련된 모든 항목 선택)';
+            title.textContent = '4. ? 악기 태그 (관련된 모든 항목 선택)';
             container.appendChild(title);
 
             // Function to generate a list of instruments for a category
