@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Suno AI 프롬프트 빌더</title>
+    <style>
+        /* 기본 스타일 */
+        body { font-family: 'Malgun Gothic', 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
+        section { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
+        h2 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-top: 0; }
+        
+        .checkbox-group { 
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 10px; 
+            border: 1px dashed #ccc; border-radius: 5px; max-height: 250px; overflow-y: auto; 
+            background-color: #fafafa;
+        }
+
+        /* 체크박스 라벨 (태그 버튼) */
+        .checkbox-group label { 
+            background-color: #f0f0f0; color: #6c757d; padding: 8px 14px; border-radius: 25px; 
+            cursor: pointer; transition: all 0.2s; font-size: 14px; white-space: nowrap; 
+            border: 1px solid #d4d4d4; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        /* 선택된 체크박스 라벨 스타일 */
+        .checkbox-group input[type="checkbox"] { display: none; }
+        .checkbox-group input[type="checkbox"]:checked + label { 
+            background-color: #dc3545; color: white; border-color: #c82333; font-weight: bold; 
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.7); transform: scale(1.03); 
+        }
+        
+        /* 공통 입력/선택 스타일 */
+        input[type="text"], select { 
+            padding: 8px; border: 1px solid #ccc; border-radius: 5px; margin-right: 5px; 
+            box-sizing: border-box; display: inline-block;
+        }
+        select { margin-bottom: 5px; }
+        
+        button { 
+            padding: 12px 25px; background-color: #007bff; color: white; border: none; 
+            border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 16px; 
+            font-weight: bold; transition: background-color 0.3s; display: block; width: 100%;
+        }
+        button:hover { background-color: #0056b3; }
+        
+        textarea { 
+            width: 100%; padding: 15px; border: 2px solid #007bff; border-radius: 5px; 
+            box-sizing: border-box; margin-top: 10px; font-family: Consolas, monospace; font-size: 14px; 
+            background-color: #f8f9fa; 
+        }
+        
+        .category-title { font-weight: bold; margin-top: 15px; display: block; color: #007bff; font-size: 15px; padding-left: 5px; }
+        hr { border: 0; height: 1px; background-color: #ccc; margin: 20px 0; }
+        .output-section h2 { color: #dc3545; border-bottom: 2px solid #dc3545; }
+
+        /* 섹션별 디테일 스타일 */
+        #section-details-container {
+            margin-top: 15px; padding: 15px; border: 1px solid #f0ad4e; border-radius: 5px; background-color: #fff9f3;
+        }
+        .section-detail {
+            margin-bottom: 15px; padding: 10px; border-left: 5px solid #d9534f; background-color: #fff; border-radius: 3px;
+        }
+        .section-detail label {
+            font-weight: bold; display: block; margin-bottom: 8px; color: #d9534f; border-bottom: 1px dotted #f0ad4e; padding-bottom: 3px;
+            font-size: 14px;
+        }
+        .detail-row {
+            display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 10px;
+        }
+        .detail-row select {
+            flex-grow: 1; min-width: 120px; margin-right: 0;
+        }
+        
+        /* 섹션별 악기 멀티 선택 영역 스타일 */
+        .instrument-multiselect {
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px dashed #c0c0c0;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .instrument-multiselect h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #555;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 3px;
+        }
+        .instrument-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        .instrument-list label {
+            font-weight: normal;
+            color: #333;
+            margin-right: 5px;
+            display: inline-block;
+            border-bottom: none; 
+            padding-bottom: 0;
+            cursor: pointer;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ Suno AI 프롬프트 빌더 ✨</h1>
+    
+    <section id="style-selection">
+        <h2>1. 🎼 전체 음악 스타일 모듈 (Style of Music)</h2>
+        <span class="category-title">⭐ 장르 & 스타일 태그:</span>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="genre" value="Pop"> Pop</label>
+            <label><input type="checkbox" name="genre" value="Rock"> Rock</label>
+            <label><input type="checkbox" name="genre" value="Hip-Hop"> Hip-Hop</label>
+            <label><input type="checkbox" name="genre" value="Electronic"> Electronic</label>
+            <label><input type="checkbox" name="genre" value="Jazz"> Jazz</label>
+            <label><input type="checkbox" name="genre" value="Classical"> Classical</label>
+            <label><input type="checkbox" name="genre" value="Folk"> Folk (포크)</label>
+            <label><input type="checkbox" name="genre" value="R&B"> R&B</label>
+            <label><input type="checkbox" name="genre" value="Country"> Country (컨트리)</label>
+            <label><input type="checkbox" name="genre" value="Reggae"> Reggae (레게)</label>
+            <label><input type="checkbox" name="genre" value="Trot (트로트)"> Trot (트로트)</label>
+            
+            <label><input type="checkbox" name="subgenre_electronic" value="House"> House (하우스)</label>
+            <label><input type="checkbox" name="subgenre_electronic" value="Techno"> Techno (테크노)</label>
+            <label><input type="checkbox" name="subgenre_electronic" value="Ambient"> Ambient (앰비언트)</label>
+            <label><input type="checkbox" name="subgenre_electronic" value="Dubstep"> Dubstep (덥스텝)</label>
+            <label><input type="checkbox" name="subgenre_electronic" value="Trance"> Trance (트랜스)</label>
+
+            <label><input type="checkbox" name="subgenre_rock" value="Alternative Rock"> Alternative Rock (얼터너티브)</label>
+            <label><input type="checkbox" name="subgenre_rock" value="Hard Rock"> Hard Rock (하드 록)</label>
+            <label><input type="checkbox" name="subgenre_rock" value="Indie Rock"> Indie Rock (인디 록)</label>
+            <label><input type="checkbox" name="subgenre_rock" value="Progressive Rock"> Progressive Rock (프로그레시브)</label>
+
+            <label><input type="checkbox" name="subgenre_hybrid" value="Indie Folk"> Indie Folk</label>
+            <label><input type="checkbox" name="subgenre_hybrid" value="Jazz Fusion"> Jazz Fusion</label>
+            <label><input type="checkbox" name="subgenre_hybrid" value="Electro-Swing"> Electro-Swing</label>
+            <label><input type="checkbox" name="subgenre_hybrid" value="Trip-Hop"> Trip-Hop</label>
+            <label><input type="checkbox" name="subgenre_hybrid" value="Cinematic Pop"> Cinematic Pop</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Goth"> Goth</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Shoegaze"> Shoegaze</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Stoner Rock"> Stoner Rock</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Ska Punk"> Ska Punk</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Glitch Hop"> Glitch Hop</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Future Bass"> Future Bass</label>
+        </div>
+        
+        <hr>
+
+        <span class="category-title">🗓️ 시대별 & 🌍 지역별 스타일:</span>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="era" value="80s Synthwave"> 80s Synthwave</label>
+            <label><input type="checkbox" name="era" value="90s Grunge"> 90s Grunge</label>
+            <label><input type="checkbox" name="era" value="70s Funk"> 70s Funk</label>
+            <label><input type="checkbox" name="era" value="Y2K Pop"> Y2K Pop</label>
+            <label><input type="checkbox" name="era" value="Big Band Era"> Big Band Era</label>
+            <label><input type="checkbox" name="regional" value="Afrobeat"> Afrobeat</label>
+            <label><input type="checkbox" name="regional" value="Latin Jazz"> Latin Jazz</label>
+            <label><input type="checkbox" name="regional" value="Bossa Nova"> Bossa Nova</label>
+            <label><input type="checkbox" name="regional" value="Salsa"> Salsa</label>
+            <label><input type="checkbox" name="regional" value="Gospel"> Gospel</label>
+            <label><input type="checkbox" name="regional" value="Bollywood"> Bollywood</label>
+            <label><input type="checkbox" name="regional" value="Ska"> Ska</label>
+            <label><input type="checkbox" name="regional" value="Celtic Folk"> Celtic Folk</label>
+            <label><input type="checkbox" name="regional" value="Klezmer Music"> Klezmer Music</label>
+        </div>
+
+        <hr>
+
+        <span class="category-title">🧠 감정적 무드 & 🔊 분위기 & 에너지 태그:</span>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="energy_intensity_overall" value="High Energy"> High Energy</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Low Energy"> Low Energy</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Intense"> Intense (강렬한)</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Gentle"> Gentle (부드러운)</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Powerful"> Powerful (힘있는)</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Dynamic"> Dynamic (역동적인)</label>
+
+            <label><input type="checkbox" name="mood_overall" value="Melancholic"> Melancholic (우울한)</label>
+            <label><input type="checkbox" name="mood_overall" value="Euphoric"> Euphoric (황홀한)</label>
+            <label><input type="checkbox" name="mood_overall" value="Nostalgic"> Nostalgic (향수 어린)</label>
+            <label><input type="checkbox" name="mood_overall" value="Dreamy"> Dreamy (몽환적인)</label>
+            <label><input type="checkbox" name="mood_overall" value="Aggressive"> Aggressive (공격적인)</label>
+            <label><input type="checkbox" name="mood_overall" value="Peaceful"> Peaceful (평화로운)</label>
+            <label><input type="checkbox" name="mood_overall" value="Mysterious"> Mysterious (신비로운)</label>
+            
+            <label><input type="checkbox" name="texture_fx" value="Lo-Fi"> Lo-Fi</label>
+            <label><input type="checkbox" name="texture_fx" value="Vinyl Hiss"> Vinyl Hiss (잡음)</label>
+            <label><input type="checkbox" name="texture_fx" value="Tape Saturation"> Tape Saturation</label>
+            <label><input type="checkbox" name="texture_fx" value="Spacious"> Spacious (공간감)</label>
+            <label><input type="checkbox" name="texture_fx" value="Reverberant"> Reverberant (울림)</label>
+            <label><input type="checkbox" name="texture_fx" value="Distorted"> Distorted (왜곡된)</label>
+            <label><input type="checkbox" name="texture_fx" value="Analog"> Analog (아날로그)</label>
+            <label><input type="checkbox" name="texture_fx" value="Warm Mix"> Warm Mix</label>
+            <label><input type="checkbox" name="texture_fx" value="Crystal Clear"> Crystal Clear (투명한)</label>
+            <label><input type="checkbox" name="texture_fx" value="Dry Mix"> Dry Mix (잔향 없음)</label>
+            <label><input type="checkbox" name="texture_fx" value="Crisp"> Crisp (바삭한)</label>
+        </div>
+
+        <hr>
+        
+        <span class="category-title">🎤 보컬 성별/유형 및 BPM 지정:</span>
+        <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
+            <select id="overallVocalGender">
+                <option value="">-- 보컬 성별/유형 (필수 아님) --</option>
+                <option value="Male Vocals">Male Vocals (남성)</option>
+                <option value="Female Vocals">Female Vocals (여성)</option>
+                <option value="Child Vocals">Child Vocals (어린이)</option>
+                <option value="Duet Vocals">Duet Vocals (듀엣)</option>
+                <option value="Harmonies">Harmonies (화음)</option>
+                <option value="Choir">Choir (합창단)</option>
+                <option value="No Vocals">No Vocals (보컬 없음)</option>
+            </select>
+            
+            <input type="text" id="overallBpm" placeholder="정확한 BPM 값 (예: 110)">
+        </div>
+
+        <span class="category-title">🗣️ 보컬 스타일/테크닉/특징 추가 (Vocal Styles/Techniques/Characters):</span>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="vocal_style_overall" value="Powerful Vocals"> Powerful Vocals (힘찬)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Whispered Vocals"> Whispered Vocals (속삭이는)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Smooth Vocals"> Smooth Vocals (부드러운)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Raspy Voice"> Raspy Voice (거친 목소리)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Clear Voice"> Clear Voice (맑은 목소리)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Deep Voice"> Deep Voice (깊은 목소리)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="High Voice"> High Voice (높은 목소리)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Soulful Voice"> Soulful Voice (소울풀한)</label>
+
+            <label><input type="checkbox" name="vocal_style_overall" value="Falsetto"> Falsetto (가성)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Vibrato"> Vibrato</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Melismatic"> Melismatic (멜리스마)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Staccato Vocals"> Staccato Vocals</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Legato Vocals"> Legato Vocals</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Ad-libs"> Ad-libs (추임새)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Shouting"> Shouting (외침)</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Scat Singing"> Scat Singing</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Yodeling"> Yodeling</label>
+        </div>
+
+    </section>
+
+    <hr>
+    
+    <section>
+        <h2>2. 📝 곡 구조 및 섹션별 디테일 모듈</h2>
+        <span class="category-title">원하는 곡 구조 템플릿 선택 (필수):</span>
+        <select id="structureType" onchange="updateSectionDetails(this.value);">
+            <option value="">-- 구조 유형 선택 --</option>
+            <optgroup label="--- 🎤 팝 음악 구조 (Pop Music Structure) ---">
+                <option value="StandardPop">표준 팝 (Verse-Chorus-Bridge)</option>
+                <option value="HookFocusPop">팝 후크 강조 (Chorus First)</option>
+                <option value="KPopDance">K-Pop/댄스 팝 (Dance Break 포함)</option>
+            </optgroup>
+            <optgroup label="--- 🎸 록 음악 구조 (Rock Music Structure) ---">
+                <option value="ClassicRock">클래식 록 (Guitar Solo)</option>
+                <option value="AlternativeGrunge">얼터너티브/그랜지 (Soft-Loud 대비)</option>
+                <option value="ProgressiveRock">프로그레시브 록 (복잡한 간주)</option>
+            </optgroup>
+            <optgroup label="--- 🎧 힙합/R&B 구조 ---">
+                <option value="StandardHipHop">표준 힙합 (Verse-Hook)</option>
+                <option value="R&BSoul">R&B/소울 (Ad-libs, Harmony)</option>
+                <option value="TrapStreet">트랩/스트리트 (Beat Drop 강조)</option>
+            </optgroup>
+            <optgroup label="--- 🔊 EDM/댄스 음악 구조 ---">
+                <option value="HouseTechno">하우스/테크노 (Build-up & Drop)</option>
+                <option value="TranceDubstep">트랜스/덥스텝 (Climactic Drop)</option>
+                <option value="LoFiAmbient">Lo-Fi/Ambient (Seamless Loop)</option>
+            </optgroup>
+            <optgroup label="--- 🎷 재즈/블루스 구조 ---">
+                <option value="StandardBlues">블루스 (12마디, Improv Solo)</option>
+                <option value="JazzStandard">재즈 스탠더드 (AABA 형식)</option>
+            </optgroup>
+            <optgroup label="--- 🎻 클래식/시네마틱 구조 ---">
+                <option value="CinematicScore">시네마틱 스코어 (Tension & Climax)</option>
+                <option value="ModernClassical">현대 클래식 (악장 Movement 구분)</option>
+            </optgroup>
+             <optgroup label="--- 💃 트로트 구조 확장 ---">
+                <option value="StandardTrot">정통 트로트 (Instrumental Break)</option>
+                <option value="DanceTrot">댄스 트로트 (뽕짝)</option>
+                <option value="SlowTrot">느린 트로트 (애수 강조 발라드형)</option>
+            </optgroup>
+             <optgroup label="--- 🎹 발라드 구조 확장 ---">
+                <option value="PowerBallad">파워 발라드 (Key Change, Max Power)</option>
+                <option value="R&BBallad">R&B 발라드 (Vocal Harmony, Sax/Rhodes 간주)</option>
+                <option value="AcousticBallad">어쿠스틱 발라드 (Simple, Verse 3 활용)</option>
+            </optgroup>
+            <optgroup label="--- 🌲 포크/컨트리/레게 구조 ---">
+                <option value="StandardFolk">표준 포크 (Verse 3 간주)</option>
+                <option value="BluegrassIrish">블루그래스/아이리시 (Fast Solo, Breakdown)</option>
+                <option value="NarrativeCountry">내러티브 컨트리 (Pedal Steel, 긴 이야기)</option>
+                <option value="StandardReggae">레게 표준 (Dub Break, Toasting)</option>
+            </optgroup>
+
+        </select>
+        <p id="structureDesc" style="margin-top: 5px; color: #555;">선택된 구조의 특징: 구조 유형을 선택해 주세요.</p>
+
+        <span class="category-title" style="margin-top: 15px;">💡 섹션별 스타일 디테일 (콤보박스 + 멀티 선택)</span>
+        <div id="section-details-container">
+            <p style="color: #a94442;">구조 유형을 선택하면 주요 섹션에 대한 BPM, 분위기, 악기, 보컬 톤 선택 필드가 나타납니다.</p>
+        </div>
+    </section>
+
+    <button onclick="generatePrompt()">프롬프트 최종 생성 및 업데이트</button>
+
+    <hr>
+    
+    <section class="output-section">
+        <h2>결과 1: Style of Music</h2>
+        <textarea id="outputStyle" rows="5" readonly placeholder="전체 곡에 적용될 핵심 스타일 태그가 여기에 표시됩니다."></textarea>
+        
+        <h2>결과 2: Lyrics Template</h2>
+        <textarea id="outputLyrics" rows="20" placeholder="섹션별 BPM/분위기 태그가 삽입된 최종 가사 구조가 여기에 표시됩니다. 가사는 꺾쇠괄호(< >) 안에 직접 입력하세요."></textarea>
+        
+        <p style="color: #dc3545; font-weight: bold; margin-top: 10px;">*사용 방법: 결과 1은 Suno의 스타일 창에, 결과 2는 가사 창에 복사 후 내용을 채워 사용하세요. 가사 내용은 직접 수정 가능</p>
+    </section>
+
+    <script>
+        // A. 섹션별 콤보박스 선택지 데이터 (업데이트됨)
+        const detailOptions = {
+            tempo: [
+                { value: '', label: '1. -- BPM/템포 (선택) --' },
+                { value: 'BPM 80', label: 'BPM 80 (Slow)' },
+                { value: 'BPM 110', label: 'BPM 110 (Medium)' },
+                { value: 'BPM 140', label: 'BPM 140 (Fast)' },
+                { value: 'BPM 180', label: 'BPM 180 (Very Fast)' },
+                { value: 'Slow Tempo', label: 'Slow Tempo (60-80 BPM)' }, // 추가
+                { value: 'Medium Tempo', label: 'Medium Tempo (90-120 BPM)' }, // 추가
+                { value: 'Fast Tempo', label: 'Fast Tempo (130-180 BPM)' }, // 추가
+                { value: 'Very Fast', label: 'Very Fast (180+ BPM)' }, // 추가
+                { value: 'Double-time feel', label: 'Double-time feel' },
+                { value: 'Half-time feel', label: 'Half-time feel' },
+            ],
+            // **[업데이트]: 분위기, 리듬감, 그루브, 박자표 태그 통합**
+            rhythmAndMood: [
+                { value: '', label: '2. -- 리듬/박자/분위기 (선택) --' },
+                
+                // 박자표 (Time Signatures)
+                { value: '4/4 Time', label: '4/4 Time (표준 박자)' },
+                { value: '3/4 Time', label: '3/4 Time (왈츠 박자)' },
+                { value: '6/8 Time', label: '6/8 Time (흐르는 복합박자)' },
+                { value: '5/4 Time', label: '5/4 Time (홀수 박자, Odd Meter)' },
+
+                // 리듬감 (Rhythmic Feels)
+                { value: 'Straight Feel', label: 'Straight Feel (균일한 8분음표)' },
+                { value: 'Swing Feel', label: 'Swing Feel (재즈/스윙 리듬)' },
+                { value: 'Shuffle Feel', label: 'Shuffle Feel (3연음 기반, 흔들리는)' },
+                { value: 'Latin Feel', label: 'Latin Feel (싱커페이션, 복잡한 퍼커션)' },
+
+                // 그루브 유형 (Groove Types)
+                { value: 'Backbeat', label: 'Backbeat (2/4 강조)' },
+                { value: 'Off-beat', label: 'Off-beat (정박 아닌 곳 강조, 레게)' },
+                { value: 'Polyrhythm', label: 'Polyrhythm (다중 리듬 패턴)' },
+                { value: 'Cross-rhythm', label: 'Cross-rhythm (엇갈리는 리듬)' },
+
+                // 에너지 및 강도 조절 태그
+                { value: 'High Energy', label: 'High Energy (높은 에너지)' },
+                { value: 'Low Energy', label: 'Low Energy (낮은 에너지)' },
+                { value: 'Building Energy', label: 'Building Energy (에너지 쌓임)' },
+                { value: 'Intense', label: 'Intense (강렬한)' },
+                { value: 'Gentle', label: 'Gentle (부드러운)' },
+                { value: 'Dynamic', label: 'Dynamic (역동적인)' },
+
+                // 감정적 무드 태그
+                { value: 'Melancholic', label: 'Melancholic (우울한)' }, 
+                { value: 'Euphoric', label: 'Euphoric (황홀한)' }, 
+                { value: 'Nostalgic', label: 'Nostalgic (향수 어린)' }, 
+                { value: 'Dreamy', label: 'Dreamy (몽환적인)' }, 
+                { value: 'Aggressive', label: 'Aggressive (공격적인)' }, 
+                { value: 'Peaceful', label: 'Peaceful (평화로운)' }, 
+                { value: 'Mysterious', label: 'Mysterious (신비로운)' }, 
+                { value: 'Dramatic', label: 'Dramatic (극적인)' },
+
+                // 연주/믹싱 디테일 
+                { value: 'Tight Drums', label: 'Tight Drums' },
+                { value: 'Swing Beat', label: 'Swing Beat' },
+                { value: 'Walking Bassline', label: 'Walking Bassline' },
+                { value: 'Dry Mix', label: 'Dry Mix (잔향 없음)' },
+                { value: 'City Street SFX', label: 'City Street SFX' }
+            ],
+            // **[업데이트]: 보컬 스타일, 테크닉, 캐릭터 태그 통합**
+            vocal: [
+                { value: '', label: '3. -- 보컬 톤/테크닉 (선택) --' },
+                // 스타일
+                { value: 'Powerful Vocals', label: 'Powerful Vocals (힘찬)' },
+                { value: 'Whispered Vocals', label: 'Whispered Vocals (속삭이는)' },
+                { value: 'Smooth Vocals', label: 'Smooth Vocals (부드러운)' },
+                { value: 'Harmonies', label: 'Harmonies (화음)' },
+                { value: 'Choir', label: 'Choir (합창단)' },
+                // 테크닉
+                { value: 'Falsetto', label: 'Falsetto (가성)' },
+                { value: 'Vibrato', label: 'Vibrato' },
+                { value: 'Melismatic', label: 'Melismatic (멜리스마)' },
+                { value: 'Staccato Vocals', label: 'Staccato Vocals' },
+                { value: 'Legato Vocals', label: 'Legato Vocals' },
+                // 캐릭터 및 액션
+                { value: 'Raspy Voice', label: 'Raspy Voice (거친 목소리)' },
+                { value: 'Clear Voice', label: 'Clear Voice (맑은 목소리)' },
+                { value: 'Deep Voice', label: 'Deep Voice (깊은 목소리)' },
+                { value: 'High Voice', label: 'High Voice (높은 목소리)' },
+                { value: 'Soulful Voice', label: 'Soulful Voice (소울풀한)' },
+                { value: 'Ad-libs', label: 'Ad-libs (추임새)' },
+                { value: 'Shouting', label: 'Shouting (외침)' },
+                { value: 'Scat Singing', label: 'Scat Singing' },
+                { value: 'Yodeling', label: 'Yodeling' }
+            ],
+            // 악기 카테고리 (전통 악기 포함 대폭 확장)
+            instrumentCategories: {
+                // 멜로디, 화성 (건반, 현악, 관악)
+                melodyHarmony: [
+                    { value: 'Piano', label: '피아노' },
+                    { value: 'Electric Piano', label: '일렉 피아노' },
+                    { value: 'Synthesizer', label: '신시사이저' },
+                    { value: 'Organ', label: '오르간' },
+                    { value: 'Strings Section', label: '현악기군' },
+                    { value: 'Electric Guitar', label: '일렉 기타' },
+                    { value: 'Acoustic Guitar', label: '어쿠스틱 기타' },
+                    { value: 'Violin', label: '바이올린' },
+                    { value: 'Cello', label: '첼로' },
+                    { value: 'Saxophone', label: '색소폰' },
+                    { value: 'Trumpet', label: '트럼펫' },
+                    { value: 'Flute', label: '플루트' },
+                    { value: 'Clarinet', label: '클라리넷' }
+                ],
+                // 리듬, 베이스, 타악기
+                rhythm: [
+                    { value: 'Bass Guitar', label: '베이스 기타' },
+                    { value: '808 Bass', label: '808 베이스' },
+                    { value: 'Drums', label: '풀 드럼 키트' },
+                    { value: 'Electronic Drums', label: '일렉 드럼' },
+                    { value: 'Hand Percussion', label: '핸드 퍼커션' },
+                    { value: 'Janggu', label: '장구' },
+                    { value: 'Taiko Drums', label: '타이코 드럼' },
+                    { value: 'Tabla', label: '타블라' },
+                    { value: 'Djembe', label: '젬베' },
+                    { value: 'Slap Bass', label: '슬랩 베이스' } // 추가
+                ],
+                // 특수 악기 및 지역 악기
+                specialRegion: [
+                    { value: 'Gayageum', label: '가야금' },
+                    { value: 'Haegeum', label: '해금' },
+                    { value: 'Daegum', label: '대금' },
+                    { value: 'Shakuhachi', label: '샤쿠하치' },
+                    { value: 'Koto', label: '코토' },
+                    { value: 'Sitar', label: '시타르' },
+                    { value: 'Pedal Steel Guitar', label: '페달 스틸 기타' }
+                ],
+                // 음향 효과 및 질감 (기존 FX/Texture 포함)
+                fxTexture: [
+                    { value: 'Distorted Guitar', label: '디스토션 기타' },
+                    { value: 'Reverb FX', label: '리버브 효과' },
+                    { value: 'Echo Delay', label: '에코 딜레이' },
+                    { value: 'Scratching', label: '스크래칭 (DJ)' },
+                    { value: 'Filtered Sweep', label: '필터 스윕' },
+                    { value: 'Arpeggiator', label: '아르페지아토' },
+                    { value: 'Soundscape', label: '사운드스케이프' },
+                    { value: 'Vinyl Hiss', label: '바이닐 잡음' },
+                    { value: 'Rainy Day SFX', label: 'Rainy Day SFX' },
+                    { value: 'Café Noise SFX', label: 'Café Noise SFX' }
+                ]
+            }
+        };
+
+        // B. 구조별 상세 설명 및 기본 템플릿 데이터 (이전과 동일)
+        const structureData = {
+            "StandardPop": {
+                desc: "가장 기본적이고 성공적인 구조. [Bridge]에서 전환 후 마지막 코러스로 폭발.",
+                sections: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Verse 2', 'Pre-Chorus', 'Chorus', 'Bridge', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy)\n<도입부 가사 1줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<1절 가사 4줄>',
+                    'Pre-Chorus': '[Pre-Chorus] (Building Energy)\n<프리 코러스 2줄>',
+                    'Chorus': '[Chorus] (High Energy)\n<후렴 가사 4줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Bridge': '[Bridge] (Gentle, Mood Switch)\n<브릿지 가사 2줄>',
+                    'Outro': '[Outro] (Fade out)\n<마무리 가사 1줄>'
+                }
+            },
+            "HookFocusPop": {
+                desc: "인트로 직후 코러스(훅)를 먼저 제시하여 즉각적으로 청중을 사로잡습니다.",
+                sections: ['Intro', 'Chorus', 'Verse 1', 'Chorus', 'Verse 2', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Short Hook Motif)\n<도입부 1줄>',
+                    'Chorus': '[Chorus] (High Energy)\n<후렴 가사 4줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy, Subtle)\n<1절 가사 4줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Outro': '[Outro] (Low Energy, Vocal Ad-libs, Fade out)\n<마무리 가사 1줄>'
+                }
+            },
+            "KPopDance": {
+                desc: "복잡하며, [Post-Chorus]와 [Dance Break]를 통해 리듬과 분위기 전환을 강조합니다.",
+                sections: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Post-Chorus', 'Verse 2', 'Pre-Chorus', 'Chorus', 'Dance Break', 'Bridge', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Synth Riser)\n<도입부 가사 1줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<1절 가사 3줄>',
+                    'Pre-Chorus': '[Pre-Chorus] (Building Energy, Tension)\n<프리 코러스 2줄>',
+                    'Chorus': '[Chorus] (High Energy)\n<후렴 가사 4줄>',
+                    'Post-Chorus': '[Post-Chorus] (Explosive Energy, Rhythm Switch)\n<후렴 후 2줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy, Rap Focus)\n<2절 랩 가사 3줄>',
+                    'Dance Break': '[Dance Break] (Intense, Heavy Beat, No Vocals)',
+                    'Bridge': '[Bridge] (Gentle, Mood Switch)\n<브릿지 가사 2줄>',
+                    'Outro': '[Outro] (High Energy, FX Fade)\n<마무리 가사 1줄>'
+                }
+            },
+            "ClassicRock": {
+                desc: "솔로 파트를 코러스와 브릿지 사이에 배치하여 곡의 중심을 잡습니다.",
+                sections: ['Intro', 'Verse 1', 'Chorus', 'Verse 2', 'Chorus', 'Guitar Solo', 'Bridge', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Medium Energy, Guitar Riff)\n<도입부 1줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<1절 가사 4줄>',
+                    'Chorus': '[Chorus] (High Energy, Powerful)\n<후렴 가사 4줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Guitar Solo': '[Guitar Solo] (Intense, Distorted, Harmonic Minor)',
+                    'Bridge': '[Bridge] (Gentle, New Chord Progression)\n<브릿지 가사 2줄>',
+                    'Outro': '[Outro] (High Energy, Drum Fill)\n<마무리 가사 1줄>'
+                }
+            },
+            "AlternativeGrunge": {
+                desc: "Soft/Loud의 극명한 대비(다이내믹)를 통해 감정의 폭발을 표현합니다.",
+                sections: ['Intro', 'Verse 1 (Soft)', 'Chorus (Loud)', 'Verse 2 (Soft)', 'Chorus (Loud)', 'Bridge (Quiet)', 'Climactic Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Quiet Guitar)',
+                    'Verse 1 (Soft)': '[Verse 1] (Low Energy, Gentle, Clean Guitar)\n<1절 가사 4줄>',
+                    'Chorus (Loud)': '[Chorus] (Explosive Energy, Intense, Heavy Distortion)\n<후렴 가사 4줄>',
+                    'Verse 2 (Soft)': '[Verse 2] (Low Energy, Clean Guitar)\n<2절 가사 4줄>',
+                    'Bridge (Quiet)': '[Bridge] (Low Energy, Gentle, Bassline Focus)\n<브릿지 가사 2줄>',
+                    'Climactic Chorus': '[Chorus] (Intense, Explosive Energy, Max Volume)\n<마지막 후렴 4줄>',
+                    'Outro': '[Outro] (Low Energy, Feedback, Fade)\n<마무리 가사 1줄>'
+                }
+            },
+            "ProgressiveRock": {
+                desc: "반복을 최소화하고, 각 섹션에 새로운 음악적 요소와 복잡한 간주를 삽입합니다.",
+                sections: ['Long Intro', 'Verse 1', 'Interlude', 'Verse 2', 'Chorus', 'Instrumental Break', 'Verse 3 (New Theme)', 'Coda'],
+                template: {
+                    'Long Intro': '[Long Intro] (Dynamic, Changing Time Signature)\n<도입부 2줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<1절 가사 5줄>',
+                    'Interlude': '[Interlude] (Intense, Keyboard Solo, Odd Meter)',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 5줄>',
+                    'Chorus': '[Chorus] (High Energy, Symphonic)\n<후렴 가사 4줄>',
+                    'Instrumental Break': '[Instrumental Break] (Intense, Technical Guitar/Drum)',
+                    'Verse 3 (New Theme)': '[Verse 3] (Medium Energy, New Chord Progression)\n<3절 가사 4줄>',
+                    'Coda': '[Coda] (Powerful, Orchestral Finish)\n<마무리 1줄>'
+                }
+            },
+            "StandardHipHop": {
+                desc: "멜로디보다 랩(Verse)의 내용에 초점을 맞추며, 훅은 짧고 반복적입니다.",
+                sections: ['Intro', 'Verse 1', 'Hook', 'Verse 2', 'Hook', 'Verse 3', 'Hook', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Medium Energy, Beat Drop)',
+                    'Verse 1': '[Verse 1] (Medium Energy, Aggressive Rap)\n<1절 랩 가사 6줄>',
+                    'Hook': '[Hook] (High Energy, Short, Repetitive)\n<훅 가사 2줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy, Storytelling Rap)\n<2절 랩 가사 6줄>',
+                    'Verse 3': '[Verse 3] (Medium Energy, Freestyle feel)\n<3절 랩 가사 6줄>',
+                    'Outro': '[Outro] (Low Energy, Beat Fade)\n<마무리 가사 1줄>'
+                }
+            },
+            "R&BSoul": {
+                desc: "발라드처럼 감정을 쌓지만, 리듬과 그루브가 강조되며 [Ad-libs]가 중요합니다.",
+                sections: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Verse 2', 'Chorus', 'Bridge (Vocal Ad-libs)', 'Chorus x2', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Rhodes/Bass)\n<도입부 1줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy, Subtle)\n<1절 가사 4줄>',
+                    'Pre-Chorus': '[Pre-Chorus] (Building Energy, Harmony)\n<프리 코러스 2줄>',
+                    'Chorus': '[Chorus] (Medium Energy, Powerful)\n<후렴 가사 4줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Bridge (Vocal Ad-libs)': '[Bridge] (Low Energy, Gentle, Vocal Ad-libs, Harmony Focus)\n<브릿지 가사 2줄>',
+                    'Chorus x2': '[Chorus] (High Energy, Climactic)\n<마지막 후렴 8줄>',
+                    'Outro': '[Outro] (Low Energy, Fade out)\n<마무리 가사 1줄>'
+                }
+            },
+            "TrapStreet": {
+                desc: "묵직한 비트와 드럼 사운드(Beat Drop)를 강조하며, 구조가 간결하고 반복적입니다.",
+                sections: ['Beat Drop Intro', 'Hook', 'Verse 1', 'Hook', 'Instrumental Break', 'Verse 2', 'Hook', 'Outro'],
+                template: {
+                    'Beat Drop Intro': '[Intro] (Explosive Energy, Heavy 808 Bass, Beat Drop)',
+                    'Hook': '[Hook] (High Energy, Short, Repetitive, Auto-tuned Vocals)\n<훅 가사 2줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<1절 랩 가사 4줄>',
+                    'Instrumental Break': '[Instrumental Break] (Intense, Beat Variation, Hi-Hat Roll)',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 랩 가사 4줄>',
+                    'Outro': '[Outro] (Low Energy, Beat Fade, FX Stop)\n<마무리 1줄>'
+                }
+            },
+            "HouseTechno": {
+                desc: "보컬은 최소화하고, 리듬과 베이스라인의 반복과 변화에 집중합니다.",
+                sections: ['Long Intro', 'Build-up', 'Drop', 'Breakdown (Quiet)', 'Build-up', 'Drop', 'Outro (Fade Out)'],
+                template: {
+                    'Long Intro': '[Intro] (Medium Energy, BPM 128, Filter Sweep)',
+                    'Build-up': '[Build-up] (Building Energy, Snare Roll, Riser FX)',
+                    'Drop': '[Drop] (High Energy, Heavy Kick, Synth Bassline)',
+                    'Breakdown (Quiet)': '[Breakdown] (Low Energy, Gentle, Ambient Synth Pad)',
+                    'Outro (Fade Out)': '[Outro] (Low Energy, Fade Out, Delay FX)'
+                }
+            },
+            "TranceDubstep": {
+                desc: "멜로디를 강조하는 브레이크다운(감성적인 간주)과 폭발적인 드롭을 명확히 구분합니다.",
+                sections: ['Intro', 'Verse', 'Chorus', 'Breakdown (Ambient)', 'Climactic Build-up', 'The Drop', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Trance Synth Lead)',
+                    'Verse': '[Verse] (Medium Energy, Vocal, Arpeggiator)\n<가사 4줄>',
+                    'Chorus': '[Chorus] (High Energy, Melodic, Layered Synth)\n<후렴 4줄>',
+                    'Breakdown (Ambient)': '[Breakdown] (Low Energy, Gentle, Long Reverb)',
+                    'Climactic Build-up': '[Build-up] (Building Energy, Snare Roll, High Pass Filter)',
+                    'The Drop': '[Drop] (Explosive Energy, Intense, Heavy Bass, Wide Stereo FX)',
+                    'Outro': '[Outro] (Low Energy, Echo Delay, Fade Out)'
+                }
+            },
+            "LoFiAmbient": {
+                desc: "조용하고 반복적인 구조. 보컬이나 강한 악기 없이 무드와 분위기에 집중합니다.",
+                sections: ['Intro', 'Loop 1', 'Loop 2 (Variation)', 'Loop 3 (Quiet)', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Gentle, Vinyl Hiss)',
+                    'Loop 1': '[Loop 1] (Medium Energy, Subtle, Hip-Hop Beat)\n<멜로디 룹>',
+                    'Loop 2 (Variation)': '[Loop 2] (Medium Energy, Subtle Variation, Piano Solo)\n<멜로디 룹 변형>',
+                    'Loop 3 (Quiet)': '[Loop 3] (Low Energy, Gentle, Ambient Pad)\n<조용한 멜로디 룹>',
+                    'Outro': '[Outro] (Low Energy, Fade Out)'
+                }
+            },
+            "StandardBlues": {
+                desc: "12마디 블루스 코드 진행을 반복하며, 즉흥 연주(Improv Solo)를 강조합니다.",
+                sections: ['Intro', 'Verse 1', 'Verse 2', 'Improv Solo (Guitar)', 'Verse 3', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Medium Energy, Blues Riff)\n<도입부 1줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<1절 가사 3줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 3줄>',
+                    'Improv Solo (Guitar)': '[Guitar Solo] (Dynamic, Improv Solo)',
+                    'Verse 3': '[Verse 3] (Medium Energy, Powerful Vocals)\n<3절 가사 3줄>',
+                    'Outro': '[Outro] (Fade out, Harmonica Fade)\n<마무리 1줄>'
+                }
+            },
+            "JazzStandard": {
+                desc: "AABA 형식, [Head]와 [Solo] 섹션의 명확한 구분이 특징입니다.",
+                sections: ['Intro', 'Head (AABA)', 'Solo 1 (Piano)', 'Solo 2 (Saxophone)', 'Head (AABA)', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Subtle, Piano Solo)\n<도입부 1줄>',
+                    'Head (AABA)': '[Head] (Medium Energy, Bossa Nova Rhythm, Male Vocals)\n<주제부 가사 4줄>',
+                    'Solo 1 (Piano)': '[Piano Solo] (Dynamic, Improvisational)',
+                    'Solo 2 (Saxophone)': '[Saxophone Solo] (Intense, High Energy)',
+                    'Outro': '[Outro] (Low Energy, Gentle, Fade out)\n<마무리 1줄>'
+                }
+            },
+            "CinematicScore": {
+                desc: "긴장감을 고조시키고(Tension) 오케스트라 사운드를 통해 감동적인 클라이맥스를 만듭니다.",
+                sections: ['Quiet Opening', 'Tension Build-up (Low)', 'Theme Introduction (Medium)', 'Climax (High)', 'Resolution/Coda (Low)'],
+                template: {
+                    'Quiet Opening': '[Intro] (Low Energy, Gentle, Ambient Soundscape, Strings Section)',
+                    'Tension Build-up (Low)': '[Tension Build] (Building Energy, Subtle, Timpani)',
+                    'Theme Introduction (Medium)': '[Main Theme] (Medium Energy, Powerful, Trumpet Lead)\n<주제 가사/설명 2줄>',
+                    'Climax (High)': '[Climax] (Explosive Energy, Intense, Full Orchestra, Choir)',
+                    'Resolution/Coda (Low)': '[Resolution] (Low Energy, Gentle, Piano)\n<마무리 1줄>'
+                }
+            },
+            "ModernClassical": {
+                desc: "악장(Movement) 구분을 통해 다양한 빠르기와 분위기를 연출합니다.",
+                sections: ['Movement 1 (Adagio)', 'Movement 2 (Allegro)', 'Movement 3 (Andante)', 'Movement 4 (Presto)'],
+                template: {
+                    'Movement 1 (Adagio)': '[Movement 1] (Low Energy, Melancholic, Strings Section, Cello Focus)',
+                    'Movement 2 (Allegro)': '[Movement 2] (High Energy, Intense, Dynamic, Fast Tempo, Full Orchestra)',
+                    'Movement 3 (Andante)': '[Movement 3] (Medium Energy, Peaceful, Flute Solo)',
+                    'Movement 4 (Presto)': '[Movement 4] (Explosive Energy, Powerful, Timpani, Climactic)'
+                }
+            },
+            "StandardTrot": {
+                desc: "정통 트로트의 뽕짝 리듬과 구성. 간주(Instrumental Break)를 통해 분위기를 전환합니다.",
+                sections: ['Intro (Instrumental)', 'Verse 1', 'Chorus (Hook)', 'Instrumental Break', 'Verse 2', 'Chorus (Hook)', 'Outro'],
+                template: {
+                    'Intro (Instrumental)': '[Intro] (Medium Energy, Synth Riff)',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<1절 가사 4줄>',
+                    'Chorus (Hook)': '[Chorus] (High Energy, Powerful Vocals)\n<후렴 가사 4줄>',
+                    'Instrumental Break': '[Instrumental Break] (Dynamic, Saxophone Solo)',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Outro': '[Outro] (Explosive Energy, Fade out)\n<마무리 1줄>'
+                }
+            },
+            "DanceTrot": {
+                desc: "EDM/댄스 비트가 가미된 현대적 트로트. 반복적인 훅과 강한 비트가 특징.",
+                sections: ['Intro (Beat Drop)', 'Hook', 'Verse 1 (Rap/Vocal)', 'Hook', 'Dance Break (Heavy Beat)', 'Bridge', 'Hook x2', 'Outro'],
+                template: {
+                    'Intro (Beat Drop)': '[Intro] (High Energy, Beat Drop, Techno FX)',
+                    'Hook': '[Hook] (High Energy, Powerful)\n<후렴 가사 4줄>',
+                    'Verse 1 (Rap/Vocal)': '[Verse 1] (Medium Energy, Aggressive Rap)\n<1절 가사 3줄>',
+                    'Dance Break (Heavy Beat)': '[Dance Break] (Intense, Electronic Drums, Synth Lead)',
+                    'Bridge': '[Bridge] (Low Energy, Gentle, Mood Switch)\n<브릿지 가사 2줄>',
+                    'Hook x2': '[Chorus] (Explosive Energy, Max Volume)\n<마지막 후렴 8줄>',
+                    'Outro': '[Outro] (High Energy, FX Stop)\n<마무리 1줄>'
+                }
+            },
+            "SlowTrot": {
+                desc: "애수와 감성을 강조하는 발라드형 트로트. 기승전결이 뚜렷하며 [Pansori Vocal] 태그 활용 가능.",
+                sections: ['Intro (Quiet)', 'Verse 1', 'Chorus', 'Instrumental Break (Haegeum)', 'Verse 2', 'Climactic Chorus', 'Outro (Fade Out)'],
+                template: {
+                    'Intro (Quiet)': '[Intro] (Low Energy, Gentle, Piano/Haegeum)',
+                    'Verse 1': '[Verse 1] (Low Energy, Emotional)\n<1절 가사 4줄>',
+                    'Chorus': '[Chorus] (Medium Energy, Powerful Vocals)\n<후렴 가사 4줄>',
+                    'Instrumental Break (Haegeum)': '[Instrumental Break] (Melancholic, Dynamic, Haegeum Solo)',
+                    'Verse 2': '[Verse 2] (Building Energy, Emotional)\n<2절 가사 4줄>',
+                    'Climactic Chorus': '[Chorus] (High Energy, Intense, Max Power)\n<마지막 후렴 4줄>',
+                    'Outro (Fade Out)': '[Outro] (Low Energy, Subtle, Piano Fade)\n<마무리 1줄>'
+                }
+            },
+            "PowerBallad": {
+                desc: "후렴에서 최대의 폭발력과 드라마를 구현. [Key Change]와 [Max Power]를 강조합니다.",
+                sections: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Verse 2', 'Guitar Solo (Climactic)', 'Bridge (Quiet)', 'Key Change Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Piano)\n<도입부 1줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy, Gentle)\n<1절 가사 4줄>',
+                    'Pre-Chorus': '[Pre-Chorus] (Building Energy)\n<프리 코러스 2줄>',
+                    'Chorus': '[Chorus] (High Energy, Powerful)\n<후렴 가사 4줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Guitar Solo (Climactic)': '[Guitar Solo] (Intense, Dynamic)',
+                    'Bridge (Quiet)': '[Bridge] (Low Energy, Subtle)\n<브릿지 가사 2줄>',
+                    'Key Change Chorus': '[Chorus] (Explosive Energy, Key Change, Max Power)\n<마지막 후렴 4줄>',
+                    'Outro': '[Outro] (Powerful, Fade out)\n<마무리 1줄>'
+                }
+            },
+            "R&BBallad": {
+                desc: "느린 템포, 보컬 하모니, 재즈적인 악기(Sax, Rhodes) 간주가 특징입니다.",
+                sections: ['Intro (Rhodes)', 'Verse 1', 'Chorus (Harmony)', 'Interlude (Sax Solo)', 'Verse 2', 'Chorus (Ad-libs)', 'Outro'],
+                template: {
+                    'Intro (Rhodes)': '[Intro] (Low Energy, Gentle, Rhodes)\n<도입부 1줄>',
+                    'Verse 1': '[Verse 1] (Low Energy, Subtle)\n<1절 가사 4줄>',
+                    'Chorus (Harmony)': '[Chorus] (Medium Energy, Vocal Harmony)\n<후렴 가사 4줄>',
+                    'Interlude (Sax Solo)': '[Interlude] (Medium Energy, Saxophone Solo)',
+                    'Verse 2': '[Verse 2] (Medium Energy, Building Energy)\n<2절 가사 4줄>',
+                    'Chorus (Ad-libs)': '[Chorus] (High Energy, Powerful, Vocal Ad-libs)\n<마지막 후렴 4줄>',
+                    'Outro': '[Outro] (Low Energy, Gentle, Fade out)\n<마무리 1줄>'
+                }
+            },
+            "AcousticBallad": {
+                desc: "심플하고 어쿠스틱 악기 위주. [Verse 3]까지 사용하여 이야기를 풀어냅니다.",
+                sections: ['Intro', 'Verse 1', 'Chorus (Simple)', 'Verse 2', 'Instrumental Break (Guitar)', 'Verse 3', 'Chorus (Climactic)', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Acoustic Guitar)',
+                    'Verse 1': '[Verse 1] (Low Energy, Gentle)\n<1절 가사 4줄>',
+                    'Chorus (Simple)': '[Chorus] (Medium Energy, Simple Drums)\n<후렴 가사 4줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Instrumental Break (Guitar)': '[Instrumental Break] (Medium Energy, Dynamic, Acoustic Guitar Solo)',
+                    'Verse 3': '[Verse 3] (Building Energy)\n<3절 가사 4줄>',
+                    'Chorus (Climactic)': '[Chorus] (High Energy, Powerful, Strings Section)\n<마지막 후렴 4줄>',
+                    'Outro': '[Outro] (Low Energy, Gentle, Piano Fade)\n<마무리 1줄>'
+                }
+            },
+            "StandardFolk": {
+                desc: "표준적인 포크 구조. 간주를 통해 자연스러운 흐름을 만듭니다.",
+                sections: ['Intro', 'Verse 1', 'Chorus', 'Verse 2', 'Chorus', 'Instrumental Break', 'Verse 3', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Acoustic Guitar)\n<도입부 1줄>',
+                    'Verse 1': '[Verse 1] (Medium Energy, Gentle)\n<1절 가사 4줄>',
+                    'Chorus': '[Chorus] (Medium Energy)\n<후렴 가사 4줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Instrumental Break': '[Instrumental Break] (Dynamic, Mandolin Solo)',
+                    'Verse 3': '[Verse 3] (Building Energy)\n<3절 가사 4줄>',
+                    'Outro': '[Outro] (Low Energy, Gentle, Fade out)\n<마무리 1줄>'
+                }
+            },
+            "BluegrassIrish": {
+                desc: "빠른 템포와 현악기(바이올린, 밴조)의 빠른 독주(Fast Solo)와 리듬 변화(Breakdown)가 특징.",
+                sections: ['Intro (Fast)', 'Verse 1', 'Chorus', 'Fast Solo (Banjo)', 'Breakdown (Quiet)', 'Verse 2', 'Chorus', 'Outro'],
+                template: {
+                    'Intro (Fast)': '[Intro] (High Energy, Fast Tempo, Fiddle Lead)',
+                    'Verse 1': '[Verse 1] (High Energy, Dynamic)\n<1절 가사 4줄>',
+                    'Chorus': '[Chorus] (High Energy, Powerful)\n<후렴 가사 4줄>',
+                    'Fast Solo (Banjo)': '[Banjo Solo] (Explosive Energy, Intense, Fast Solo)',
+                    'Breakdown (Quiet)': '[Breakdown] (Low Energy, Gentle, Rhythm Switch)',
+                    'Verse 2': '[Verse 2] (High Energy)\n<2절 가사 4줄>',
+                    'Outro': '[Outro] (High Energy, Fade out)\n<마무리 1줄>'
+                }
+            },
+            "NarrativeCountry": {
+                desc: "긴 이야기를 풀어내는 구조. 페달 스틸 기타가 분위기를 조성하며, 보컬에 집중합니다.",
+                sections: ['Intro (Pedal Steel)', 'Verse 1 (Story)', 'Chorus', 'Verse 2 (Detail)', 'Interlude (Pedal Steel)', 'Verse 3 (Climactic Story)', 'Chorus', 'Outro'],
+                template: {
+                    'Intro (Pedal Steel)': '[Intro] (Low Energy, Gentle, Pedal Steel Guitar)',
+                    'Verse 1 (Story)': '[Verse 1] (Medium Energy, Subtle)\n<1절 이야기 4줄>',
+                    'Chorus': '[Chorus] (High Energy, Powerful)\n<후렴 가사 4줄>',
+                    'Verse 2 (Detail)': '[Verse 2] (Medium Energy)\n<2절 이야기 4줄>',
+                    'Interlude (Pedal Steel)': '[Interlude] (Medium Energy, Pedal Steel Guitar Solo)',
+                    'Verse 3 (Climactic Story)': '[Verse 3] (Building Energy, Emotional, Story Climax)\n<3절 이야기 4줄>',
+                    'Outro': '[Outro] (Low Energy, Gentle, Fade out)\n<마무리 1줄>'
+                }
+            },
+            "StandardReggae": {
+                desc: "느린 템포, 묵직한 베이스, 오프비트 기타(Skank)가 특징. [Dub Break]와 [Toasting]을 활용.",
+                sections: ['Intro (Dub FX)', 'Verse 1', 'Chorus', 'Verse 2', 'Dub Break (Instrumental)', 'Toasting (Vocal FX)', 'Chorus', 'Outro'],
+                template: {
+                    'Intro (Dub FX)': '[Intro] (Low Energy, Dub FX, Bassline Focus)',
+                    'Verse 1': '[Verse 1] (Medium Energy, Subtle)\n<1절 가사 4줄>',
+                    'Chorus': '[Chorus] (Medium Energy, Powerful)\n<후렴 가사 4줄>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<2절 가사 4줄>',
+                    'Dub Break (Instrumental)': '[Dub Break] (Low Energy, Echo Delay, Instrumental)',
+                    'Toasting (Vocal FX)': '[Toasting] (Dynamic, Vocal FX, Rap/Chant)',
+                    'Outro': '[Outro] (Low Energy, Fade out, Delay FX)'
+                }
+            }
+        };
+
+
+        /* -----------------------------------------------------------
+        // C. 자바스크립트 로직 (이벤트 리스너 수정됨)
+        ----------------------------------------------------------- */
+
+        // 모든 체크박스와 입력 필드에 이벤트 리스너 추가
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input[type="checkbox"], input[type="text"], select');
+            inputs.forEach(input => {
+                // 체크박스, select, 텍스트 입력 필드 모두 change나 keyup 시 generatePrompt를 호출
+                input.addEventListener('change', generatePrompt);
+                if (input.type === 'text') {
+                    // 텍스트 필드는 keyup 시 자동 반영 방지, '프롬프트 최종 생성' 버튼에 의존하도록 변경
+                }
+            });
+            // 최종 가사 출력 영역에도 keyup 이벤트를 추가하여 실시간 반영 (가사 내용)
+            document.getElementById('outputLyrics').addEventListener('keyup', generatePrompt);
+            
+            // 초기 프롬프트 생성 (빈 값이라도 초기화)
+            generatePrompt();
+        });
+
+
+        // 섹션별 악기/FX 체크박스를 생성하는 함수
+        function createInstrumentCheckboxes(sectionName, category, instruments) {
+            const container = document.createElement('div');
+            container.classList.add('instrument-multiselect');
+            
+            const titleMap = {
+                melodyHarmony: '🎵 멜로디/화성 (건반, 현악, 관악)',
+                rhythm: '🥁 리듬/베이스/타악기 (드럼, 베이스, 타악기)',
+                specialRegion: '🌎 특수/지역 악기',
+                fxTexture: '⚙️ 음향 효과/질감'
+            };
+
+            container.innerHTML = `<h4>${titleMap[category]}</h4><div class="instrument-list"></div>`;
+            const listDiv = container.querySelector('.instrument-list');
+
+            instruments.forEach(inst => {
+                const inputId = `inst-${sectionName}-${inst.value.replace(/\s/g, '-')}`;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = inputId;
+                checkbox.name = `${sectionName}_instrument`;
+                checkbox.value = inst.value;
+                checkbox.addEventListener('change', generatePrompt);
+
+                const label = document.createElement('label');
+                label.htmlFor = inputId;
+                label.textContent = inst.label;
+
+                listDiv.appendChild(checkbox);
+                listDiv.appendChild(label);
+            });
+
+            return container;
+        }
+
+
+        // 선택된 구조에 따라 섹션 디테일 입력 필드를 업데이트하는 함수
+        function updateSectionDetails(structureKey) {
+            const container = document.getElementById('section-details-container');
+            const desc = document.getElementById('structureDesc');
+            container.innerHTML = '';
+            
+            if (!structureKey) {
+                desc.textContent = "선택된 구조의 특징: 구조 유형을 선택해 주세요.";
+                return;
+            }
+
+            const data = structureData[structureKey];
+            desc.textContent = `선택된 구조의 특징: ${data.desc}`;
+
+            data.sections.forEach(sectionName => {
+                const detailDiv = document.createElement('div');
+                detailDiv.classList.add('section-detail');
+                
+                // 섹션 제목 (예: [Chorus])
+                const sectionTitle = document.createElement('label');
+                sectionTitle.textContent = `[${sectionName.toUpperCase()}] 섹션 태그 지정`;
+                detailDiv.appendChild(sectionTitle);
+
+                // 콤보박스 행
+                const detailRow = document.createElement('div');
+                detailRow.classList.add('detail-row');
+
+                // 1. BPM/템포 선택
+                const tempoSelect = document.createElement('select');
+                tempoSelect.name = `${sectionName}_tempo`;
+                detailOptions.tempo.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    tempoSelect.appendChild(option);
+                });
+                tempoSelect.addEventListener('change', generatePrompt);
+                detailRow.appendChild(tempoSelect);
+
+                // 2. 리듬/박자/분위기 선택
+                const rhythmMoodSelect = document.createElement('select');
+                rhythmMoodSelect.name = `${sectionName}_rhythm_mood`;
+                detailOptions.rhythmAndMood.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    rhythmMoodSelect.appendChild(option);
+                });
+                rhythmMoodSelect.addEventListener('change', generatePrompt);
+                detailRow.appendChild(rhythmMoodSelect);
+
+                // 3. 보컬 톤/테크닉 선택
+                const vocalSelect = document.createElement('select');
+                vocalSelect.name = `${sectionName}_vocal`;
+                detailOptions.vocal.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    vocalSelect.appendChild(option);
+                });
+                vocalSelect.addEventListener('change', generatePrompt);
+                detailRow.appendChild(vocalSelect);
+
+                detailDiv.appendChild(detailRow);
+
+                // 악기 멀티 선택 영역
+                for (const category in detailOptions.instrumentCategories) {
+                    const instruments = detailOptions.instrumentCategories[category];
+                    const instrumentCheckboxes = createInstrumentCheckboxes(sectionName, category, instruments);
+                    detailDiv.appendChild(instrumentCheckboxes);
+                }
+
+                container.appendChild(detailDiv);
+            });
+            // 구조 변경 시, 가사 템플릿을 초기화하는 부분만 여기서 실행
+            setInitialLyricsTemplate(structureKey); 
+            generatePrompt(); // 필드 생성 후 즉시 프롬프트 재생성
+        }
+
+        /**
+         * 초기 가사 템플릿을 설정합니다. (구조 선택 시 한 번만 실행)
+         */
+        function setInitialLyricsTemplate(structureKey) {
+            const outputLyrics = document.getElementById('outputLyrics');
+            const data = structureData[structureKey];
+            let initialTemplate = '';
+
+            data.sections.forEach(sectionName => {
+                const baseTemplate = data.template[sectionName] || `[${sectionName.toUpperCase()}]\n<${sectionName} 가사>`;
+                const lines = baseTemplate.split('\n');
+                // 태그 부분만 추출하고 가사 부분은 템플릿 그대로 사용
+                const tagLine = lines[0];
+                const lyricLines = lines.slice(1).join('\n');
+                initialTemplate += `${tagLine}\n${lyricLines}\n\n`;
+            });
+            outputLyrics.value = initialTemplate.trim();
+        }
+
+
+        // 최종 프롬프트를 생성하고 출력 필드를 업데이트하는 핵심 함수
+        function generatePrompt() {
+            const styleTags = [];
+            const selectedGenre = [];
+            
+            // 1. 전체 스타일 태그 수집 (Style of Music)
+            const styleCheckboxes = document.querySelectorAll('#style-selection input[type="checkbox"]:checked');
+            styleCheckboxes.forEach(checkbox => {
+                const value = checkbox.value.trim();
+                if (value) {
+                    styleTags.push(value);
+                    if (checkbox.name === 'genre') {
+                        selectedGenre.push(value);
+                    }
+                }
+            });
+
+            // 보컬 성별/유형 추가
+            const overallVocal = document.getElementById('overallVocalGender').value;
+            if (overallVocal && overallVocal !== 'No Vocals') {
+                styleTags.push(overallVocal);
+            }
+            if (overallVocal === 'No Vocals') {
+                 styleTags.push('No Vocals');
+            }
+
+
+            // BPM 추가
+            const overallBpm = document.getElementById('overallBpm').value.trim();
+            let bpmTag = '';
+            // BPM 필드는 '프롬프트 최종 생성' 버튼이 눌러졌을 때만 반영되도록 하려면,
+            // 이 로직을 분리해야 하지만, 현재는 버튼 이벤트에서 호출되므로 그대로 유지합니다.
+            if (overallBpm && !isNaN(parseInt(overallBpm))) {
+                bpmTag = `BPM ${overallBpm}`;
+                styleTags.push(bpmTag);
+            }
+
+            // 중복 제거 및 최종 스타일 문자열 생성
+            const uniqueStyleTags = [...new Set(styleTags)].join(', ');
+            document.getElementById('outputStyle').value = uniqueStyleTags;
+
+
+            // 2. 곡 구조 템플릿 및 섹션별 디테일 수집 (Lyrics Template)
+            const structureType = document.getElementById('structureType').value;
+            const outputLyrics = document.getElementById('outputLyrics');
+            
+            if (!structureType || !structureData[structureType]) {
+                outputLyrics.value = "곡 구조 유형을 선택하고, 가사 내용을 꺾쇠괄호 안에 채워주세요.";
+                return;
+            }
+
+            const data = structureData[structureType];
+            const sections = data.sections;
+            const currentLyricsContent = outputLyrics.value.trim();
+            
+            // 현재 가사 텍스트를 파싱하여 섹션 이름과 가사 내용을 매핑
+            const currentSections = {};
+            let currentSectionName = null;
+            let currentLyricLines = [];
+
+            // 기존 가사 파싱 로직
+            currentLyricsContent.split('\n').forEach(line => {
+                // 섹션 태그 라인을 인식: [SECTION NAME] 또는 [SECTION NAME] (TAGS)
+                const tagMatch = line.match(/^\[([\w\s\-\/]+)\](?:\s*\((.*)\))?$/); 
+
+                if (tagMatch) {
+                    // 이전 섹션 저장 (첫 섹션이 아니거나, 빈 섹션이 아닐 때)
+                    if (currentSectionName !== null) {
+                        currentSections[currentSectionName] = currentLyricLines.join('\n');
+                    }
+                    // 새 섹션 시작
+                    // 태그 안의 내용을 제외한 순수 섹션 이름만 저장
+                    currentSectionName = tagMatch[1].toUpperCase().trim(); 
+                    currentLyricLines = [];
+                } else if (line.trim() !== '' || currentSectionName !== null) {
+                    // 태그가 아닌 라인은 가사 내용으로 간주 (빈 줄도 포함하여 원본 유지)
+                    currentLyricLines.push(line);
+                }
+            });
+            // 마지막 섹션 저장
+            if (currentSectionName !== null) {
+                currentSections[currentSectionName] = currentLyricLines.join('\n');
+            }
+            
+
+            // 새 템플릿 생성 (태그만 업데이트)
+            let newLyricsTemplate = '';
+
+            sections.forEach(sectionName => {
+                const upperSectionName = sectionName.toUpperCase();
+                
+                // 섹션별 태그 수집
+                const sectionTags = [];
+                
+                // 콤보박스 태그 (Tempo, Mood/Rhythm, Vocal)
+                const tempoSelect = document.querySelector(`select[name="${sectionName}_tempo"]`);
+                const rhythmMoodSelect = document.querySelector(`select[name="${sectionName}_rhythm_mood"]`);
+                const vocalSelect = document.querySelector(`select[name="${sectionName}_vocal"]`);
+
+                const tempoTag = tempoSelect ? tempoSelect.value : '';
+                const rhythmMoodTag = rhythmMoodSelect ? rhythmMoodSelect.value : '';
+                const vocalTag = vocalSelect ? vocalSelect.value : '';
+                
+                if (tempoTag) sectionTags.push(tempoTag);
+                if (rhythmMoodTag) sectionTags.push(rhythmMoodTag);
+                if (vocalTag) sectionTags.push(vocalTag);
+
+                // 악기 멀티 선택 태그
+                const instrumentCheckboxes = document.querySelectorAll(`input[name="${sectionName}_instrument"]:checked`);
+                const instrumentTags = Array.from(instrumentCheckboxes).map(cb => cb.value);
+                
+                if (instrumentTags.length > 0) {
+                    sectionTags.push(instrumentTags.join(', '));
+                }
+
+                // 태그를 최종 라인에 삽입
+                let finalSectionLine = `[${upperSectionName}]`;
+                if (sectionTags.length > 0) {
+                    finalSectionLine = `[${upperSectionName}] (${sectionTags.join(', ')})`;
+                }
+
+                // 기존 가사 내용 가져오기 (없으면 기본 템플릿의 가사 내용 사용)
+                let lyricContent = '';
+                // 원본 섹션 이름(예: Verse 1 (Soft))을 키로 사용
+                const originalKey = sectionName.toUpperCase(); 
+
+                if (currentSections[originalKey] !== undefined) {
+                    // 현재 편집 중인 가사 내용을 사용
+                    lyricContent = currentSections[originalKey];
+                } else {
+                    // 초기 템플릿의 가사 부분(꺾쇠괄호) 사용
+                    const baseTemplateLines = data.template[sectionName].split('\n');
+                    lyricContent = baseTemplateLines.slice(1).join('\n');
+                }
+                
+                // 섹션 사이에 빈 줄을 넣어서 가독성 확보
+                newLyricsTemplate += `${finalSectionLine}\n${lyricContent.trim()}\n\n`; 
+            });
+            
+            // 최종 결과 반영
+            outputLyrics.value = newLyricsTemplate.trim();
+        }
+
+    </script>
+</body>
+</html>

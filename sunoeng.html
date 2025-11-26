@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Suno AI Prompt Builder</title>
+    <style>
+        /* Base Styles */
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
+        section { margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
+        h2 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-top: 0; }
+        
+        .checkbox-group { 
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 10px; 
+            border: 1px dashed #ccc; border-radius: 5px; max-height: 250px; overflow-y: auto; 
+            background-color: #fafafa;
+        }
+
+        /* Checkbox Labels (Tag Buttons) */
+        .checkbox-group label { 
+            background-color: #f0f0f0; color: #6c757d; padding: 8px 14px; border-radius: 25px; 
+            cursor: pointer; transition: all 0.2s; font-size: 14px; white-space: nowrap; 
+            border: 1px solid #d4d4d4; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        /* Selected Checkbox Label Style */
+        .checkbox-group input[type="checkbox"] { display: none; }
+        .checkbox-group input[type="checkbox"]:checked + label { 
+            background-color: #dc3545; color: white; border-color: #c82333; font-weight: bold; 
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.7); transform: scale(1.03); 
+        }
+        
+        /* Common Input/Select Style */
+        input[type="text"], select { 
+            padding: 8px; border: 1px solid #ccc; border-radius: 5px; margin-right: 5px; 
+            box-sizing: border-box; display: inline-block;
+        }
+        select { margin-bottom: 5px; }
+        
+        button { 
+            padding: 12px 25px; background-color: #007bff; color: white; border: none; 
+            border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 16px; 
+            font-weight: bold; transition: background-color 0.3s; display: block; width: 100%;
+        }
+        button:hover { background-color: #0056b3; }
+        
+        textarea { 
+            width: 100%; padding: 15px; border: 2px solid #007bff; border-radius: 5px; 
+            box-sizing: border-box; margin-top: 10px; font-family: Consolas, monospace; font-size: 14px; 
+            background-color: #f8f9fa; 
+        }
+        
+        .category-title { font-weight: bold; margin-top: 15px; display: block; color: #007bff; font-size: 15px; padding-left: 5px; }
+        hr { border: 0; height: 1px; background-color: #ccc; margin: 20px 0; }
+        .output-section h2 { color: #dc3545; border-bottom: 2px solid #dc3545; }
+
+        /* Section Detail Styles */
+        #section-details-container {
+            margin-top: 15px; padding: 15px; border: 1px solid #f0ad4e; border-radius: 5px; background-color: #fff9f3;
+        }
+        .section-detail {
+            margin-bottom: 15px; padding: 10px; border-left: 5px solid #d9534f; background-color: #fff; border-radius: 3px;
+        }
+        .section-detail label {
+            font-weight: bold; display: block; margin-bottom: 8px; color: #d9534f; border-bottom: 1px dotted #f0ad4e; padding-bottom: 3px;
+            font-size: 14px;
+        }
+        .detail-row {
+            display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 10px;
+        }
+        .detail-row select {
+            flex-grow: 1; min-width: 120px; margin-right: 0;
+        }
+        
+        /* Instrument Multi-select Area Styles */
+        .instrument-multiselect {
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px dashed #c0c0c0;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .instrument-multiselect h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #555;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 3px;
+        }
+        .instrument-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        .instrument-list label {
+            font-weight: normal;
+            color: #333;
+            margin-right: 5px;
+            display: inline-block;
+            border-bottom: none; 
+            padding-bottom: 0;
+            cursor: pointer;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ Suno AI Prompt Builder ✨</h1>
+    
+    <section id="style-selection">
+        <h2>1. 🎼 Overall Music Style Module (Style of Music)</h2>
+        <span class="category-title">⭐ Genre & Style Tags:</span>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="genre" value="Pop"> Pop</label>
+            <label><input type="checkbox" name="genre" value="Rock"> Rock</label>
+            <label><input type="checkbox" name="genre" value="Hip-Hop"> Hip-Hop</label>
+            <label><input type="checkbox" name="genre" value="Electronic"> Electronic</label>
+            <label><input type="checkbox" name="genre" value="Jazz"> Jazz</label>
+            <label><input type="checkbox" name="genre" value="Classical"> Classical</label>
+            <label><input type="checkbox" name="genre" value="Folk"> Folk</label>
+            <label><input type="checkbox" name="genre" value="R&B"> R&B</label>
+            <label><input type="checkbox" name="genre" value="Country"> Country</label>
+            <label><input type="checkbox" name="genre" value="Reggae"> Reggae</label>
+            <label><input type="checkbox" name="genre" value="Trot (Korean)"> Trot (Korean)</label>
+            
+            <label><input type="checkbox" name="subgenre_electronic" value="House"> House</label>
+            <label><input type="checkbox" name="subgenre_electronic" value="Techno"> Techno</label>
+            <label><input type="checkbox" name="subgenre_electronic" value="Ambient"> Ambient</label>
+            <label><input type="checkbox" name="subgenre_electronic" value="Dubstep"> Dubstep</label>
+            <label><input type="checkbox" name="subgenre_electronic" value="Trance"> Trance</label>
+
+            <label><input type="checkbox" name="subgenre_rock" value="Alternative Rock"> Alternative Rock</label>
+            <label><input type="checkbox" name="subgenre_rock" value="Hard Rock"> Hard Rock</label>
+            <label><input type="checkbox" name="subgenre_rock" value="Indie Rock"> Indie Rock</label>
+            <label><input type="checkbox" name="subgenre_rock" value="Progressive Rock"> Progressive Rock</label>
+
+            <label><input type="checkbox" name="subgenre_hybrid" value="Indie Folk"> Indie Folk</label>
+            <label><input type="checkbox" name="subgenre_hybrid" value="Jazz Fusion"> Jazz Fusion</label>
+            <label><input type="checkbox" name="subgenre_hybrid" value="Electro-Swing"> Electro-Swing</label>
+            <label><input type="checkbox" name="subgenre_hybrid" value="Trip-Hop"> Trip-Hop</label>
+            <label><input type="checkbox" name="subgenre_hybrid" value="Cinematic Pop"> Cinematic Pop</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Goth"> Goth</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Shoegaze"> Shoegaze</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Stoner Rock"> Stoner Rock</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Ska Punk"> Ska Punk</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Glitch Hop"> Glitch Hop</label>
+            <label><input type="checkbox" name="subgenre_niche" value="Future Bass"> Future Bass</label>
+        </div>
+        
+        <hr>
+
+        <span class="category-title">🗓️ Era & 🌍 Regional Styles:</span>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="era" value="80s Synthwave"> 80s Synthwave</label>
+            <label><input type="checkbox" name="era" value="90s Grunge"> 90s Grunge</label>
+            <label><input type="checkbox" name="era" value="70s Funk"> 70s Funk</label>
+            <label><input type="checkbox" name="era" value="Y2K Pop"> Y2K Pop</label>
+            <label><input type="checkbox" name="era" value="Big Band Era"> Big Band Era</label>
+            <label><input type="checkbox" name="regional" value="Afrobeat"> Afrobeat</label>
+            <label><input type="checkbox" name="regional" value="Latin Jazz"> Latin Jazz</label>
+            <label><input type="checkbox" name="regional" value="Bossa Nova"> Bossa Nova</label>
+            <label><input type="checkbox" name="regional" value="Salsa"> Salsa</label>
+            <label><input type="checkbox" name="regional" value="Gospel"> Gospel</label>
+            <label><input type="checkbox" name="regional" value="Bollywood"> Bollywood</label>
+            <label><input type="checkbox" name="regional" value="Ska"> Ska</label>
+            <label><input type="checkbox" name="regional" value="Celtic Folk"> Celtic Folk</label>
+            <label><input type="checkbox" name="regional" value="Klezmer Music"> Klezmer Music</label>
+        </div>
+
+        <hr>
+
+        <span class="category-title">🧠 Emotional Mood & 🔊 Vibe/Energy Tags:</span>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="energy_intensity_overall" value="High Energy"> High Energy</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Low Energy"> Low Energy</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Intense"> Intense</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Gentle"> Gentle</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Powerful"> Powerful</label>
+            <label><input type="checkbox" name="energy_intensity_overall" value="Dynamic"> Dynamic</label>
+
+            <label><input type="checkbox" name="mood_overall" value="Melancholic"> Melancholic</label>
+            <label><input type="checkbox" name="mood_overall" value="Euphoric"> Euphoric</label>
+            <label><input type="checkbox" name="mood_overall" value="Nostalgic"> Nostalgic</label>
+            <label><input type="checkbox" name="mood_overall" value="Dreamy"> Dreamy</label>
+            <label><input type="checkbox" name="mood_overall" value="Aggressive"> Aggressive</label>
+            <label><input type="checkbox" name="mood_overall" value="Peaceful"> Peaceful</label>
+            <label><input type="checkbox" name="mood_overall" value="Mysterious"> Mysterious</label>
+            
+            <label><input type="checkbox" name="texture_fx" value="Lo-Fi"> Lo-Fi</label>
+            <label><input type="checkbox" name="texture_fx" value="Vinyl Hiss"> Vinyl Hiss</label>
+            <label><input type="checkbox" name="texture_fx" value="Tape Saturation"> Tape Saturation</label>
+            <label><input type="checkbox" name="texture_fx" value="Spacious"> Spacious</label>
+            <label><input type="checkbox" name="texture_fx" value="Reverberant"> Reverberant</label>
+            <label><input type="checkbox" name="texture_fx" value="Distorted"> Distorted</label>
+            <label><input type="checkbox" name="texture_fx" value="Analog"> Analog</label>
+            <label><input type="checkbox" name="texture_fx" value="Warm Mix"> Warm Mix</label>
+            <label><input type="checkbox" name="texture_fx" value="Crystal Clear"> Crystal Clear</label>
+            <label><input type="checkbox" name="texture_fx" value="Dry Mix"> Dry Mix</label>
+            <label><input type="checkbox" name="texture_fx" value="Crisp"> Crisp</label>
+        </div>
+
+        <hr>
+        
+        <span class="category-title">🎤 Vocal Gender/Type and BPM Selection:</span>
+        <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 15px;">
+            <select id="overallVocalGender">
+                <option value="">-- Vocal Gender/Type (Optional) --</option>
+                <option value="Male Vocals">Male Vocals</option>
+                <option value="Female Vocals">Female Vocals</option>
+                <option value="Child Vocals">Child Vocals</option>
+                <option value="Duet Vocals">Duet Vocals</option>
+                <option value="Harmonies">Harmonies</option>
+                <option value="Choir">Choir</option>
+                <option value="No Vocals">No Vocals</option>
+            </select>
+            
+            <input type="text" id="overallBpm" placeholder="Exact BPM Value (e.g., 110)">
+        </div>
+
+        <span class="category-title">🗣️ Additional Vocal Styles/Techniques/Characteristics:</span>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="vocal_style_overall" value="Powerful Vocals"> Powerful Vocals</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Whispered Vocals"> Whispered Vocals</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Smooth Vocals"> Smooth Vocals</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Raspy Voice"> Raspy Voice</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Clear Voice"> Clear Voice</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Deep Voice"> Deep Voice</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="High Voice"> High Voice</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Soulful Voice"> Soulful Voice</label>
+
+            <label><input type="checkbox" name="vocal_style_overall" value="Falsetto"> Falsetto</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Vibrato"> Vibrato</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Melismatic"> Melismatic</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Staccato Vocals"> Staccato Vocals</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Legato Vocals"> Legato Vocals</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Ad-libs"> Ad-libs</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Shouting"> Shouting</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Scat Singing"> Scat Singing</label>
+            <label><input type="checkbox" name="vocal_style_overall" value="Yodeling"> Yodeling</label>
+        </div>
+
+    </section>
+
+    <hr>
+    
+    <section>
+        <h2>2. 📝 Song Structure and Section Details Module</h2>
+        <span class="category-title">Select Desired Song Structure Template (Required):</span>
+        <select id="structureType" onchange="updateSectionDetails(this.value);">
+            <option value="">-- Select Structure Type --</option>
+            <optgroup label="--- 🎤 Pop Music Structure ---">
+                <option value="StandardPop">Standard Pop (Verse-Chorus-Bridge)</option>
+                <option value="HookFocusPop">Hook Focus Pop (Chorus First)</option>
+                <option value="KPopDance">K-Pop/Dance Pop (with Dance Break)</option>
+            </optgroup>
+            <optgroup label="--- 🎸 Rock Music Structure ---">
+                <option value="ClassicRock">Classic Rock (Guitar Solo)</option>
+                <option value="AlternativeGrunge">Alternative/Grunge (Soft-Loud Contrast)</option>
+                <option value="ProgressiveRock">Progressive Rock (Complex Interlude)</option>
+            </optgroup>
+            <optgroup label="--- 🎧 Hip-Hop/R&B Structure ---">
+                <option value="StandardHipHop">Standard Hip-Hop (Verse-Hook)</option>
+                <option value="R&BSoul">R&B/Soul (Ad-libs, Harmony)</option>
+                <option value="TrapStreet">Trap/Street (Beat Drop Emphasis)</option>
+            </optgroup>
+            <optgroup label="--- 🔊 EDM/Dance Music Structure ---">
+                <option value="HouseTechno">House/Techno (Build-up & Drop)</option>
+                <option value="TranceDubstep">Trance/Dubstep (Climactic Drop)</option>
+                <option value="LoFiAmbient">Lo-Fi/Ambient (Seamless Loop)</option>
+            </optgroup>
+            <optgroup label="--- 🎷 Jazz/Blues Structure ---">
+                <option value="StandardBlues">Blues (12-Bar, Improv Solo)</option>
+                <option value="JazzStandard">Jazz Standard (AABA Form)</option>
+            </optgroup>
+            <optgroup label="--- 🎻 Cinematic/Classical Structure ---">
+                <option value="CinematicScore">Cinematic Score (Tension & Climax)</option>
+                <option value="ModernClassical">Modern Classical (Movement Division)</option>
+            </optgroup>
+             <optgroup label="--- 💃 Trot Structure Extension ---">
+                <option value="StandardTrot">Standard Trot (Instrumental Break)</option>
+                <option value="DanceTrot">Dance Trot</option>
+                <option value="SlowTrot">Slow Trot (Emotional Ballad Type)</option>
+            </optgroup>
+             <optgroup label="--- 🎹 Ballad Structure Extension ---">
+                <option value="PowerBallad">Power Ballad (Key Change, Max Power)</option>
+                <option value="R&BBallad">R&B Ballad (Vocal Harmony, Sax/Rhodes Interlude)</option>
+                <option value="AcousticBallad">Acoustic Ballad (Simple, Verse 3)</option>
+            </optgroup>
+            <optgroup label="--- 🌲 Folk/Country/Reggae Structure ---">
+                <option value="StandardFolk">Standard Folk (Verse 3 Interlude)</option>
+                <option value="BluegrassIrish">Bluegrass/Irish (Fast Solo, Breakdown)</option>
+                <option value="NarrativeCountry">Narrative Country (Pedal Steel, Long Story)</option>
+                <option value="StandardReggae">Reggae Standard (Dub Break, Toasting)</option>
+            </optgroup>
+
+        </select>
+        <p id="structureDesc" style="margin-top: 5px; color: #555;">Selected structure features: Please select a structure type.</p>
+
+        <span class="category-title" style="margin-top: 15px;">💡 Section Style Details (Combobox + Multi-select)</span>
+        <div id="section-details-container">
+            <p style="color: #a94442;">Select a structure type to reveal fields for BPM, Mood, Instruments, and Vocal Tone for each main section.</p>
+        </div>
+    </section>
+
+    <button onclick="generatePrompt()">Final Prompt Generation and Update</button>
+
+    <hr>
+    
+    <section class="output-section">
+        <h2>Result 1: Style of Music</h2>
+        <textarea id="outputStyle" rows="5" readonly placeholder="The core style tags applied to the entire song will appear here."></textarea>
+        
+        <h2>Result 2: Lyrics Template</h2>
+        <textarea id="outputLyrics" rows="20" placeholder="The final lyric structure with section-specific BPM/Mood tags will appear here. Enter your lyrics directly inside the angle brackets (< >)."></textarea>
+        
+        <p style="color: #dc3545; font-weight: bold; margin-top: 10px;">*How to Use: Copy Result 1 to Suno's Style field, and Result 2 to the Lyrics field (filling in the content) and use it.</p>
+    </section>
+
+    <script>
+        // A. Section Combobox Options Data (Updated)
+        const detailOptions = {
+            tempo: [
+                { value: '', label: '1. -- BPM/Tempo (Select) --' },
+                { value: 'BPM 80', label: 'BPM 80 (Slow)' },
+                { value: 'BPM 110', label: 'BPM 110 (Medium)' },
+                { value: 'BPM 140', label: 'BPM 140 (Fast)' },
+                { value: 'BPM 180', label: 'BPM 180 (Very Fast)' },
+                { value: 'Slow Tempo', label: 'Slow Tempo (60-80 BPM)' },
+                { value: 'Medium Tempo', label: 'Medium Tempo (90-120 BPM)' },
+                { value: 'Fast Tempo', label: 'Fast Tempo (130-180 BPM)' },
+                { value: 'Very Fast', label: 'Very Fast (180+ BPM)' },
+                { value: 'Double-time feel', label: 'Double-time feel' },
+                { value: 'Half-time feel', label: 'Half-time feel' },
+            ],
+            // **[UPDATE]: Mood, Rhythm, Groove, Time Signature Tags Consolidated**
+            rhythmAndMood: [
+                { value: '', label: '2. -- Rhythm/Meter/Mood (Select) --' },
+                
+                // Time Signatures
+                { value: '4/4 Time', label: '4/4 Time (Standard Meter)' },
+                { value: '3/4 Time', label: '3/4 Time (Waltz Meter)' },
+                { value: '6/8 Time', label: '6/8 Time (Compound Meter)' },
+                { value: '5/4 Time', label: '5/4 Time (Odd Meter)' },
+
+                // Rhythmic Feels
+                { value: 'Straight Feel', label: 'Straight Feel' },
+                { value: 'Swing Feel', label: 'Swing Feel (Jazz/Swing)' },
+                { value: 'Shuffle Feel', label: 'Shuffle Feel' },
+                { value: 'Latin Feel', label: 'Latin Feel (Syncopated)' },
+
+                // Groove Types
+                { value: 'Backbeat', label: 'Backbeat (Emphasis on 2/4)' },
+                { value: 'Off-beat', label: 'Off-beat (Emphasis on weak beats, Reggae)' },
+                { value: 'Polyrhythm', label: 'Polyrhythm' },
+                { value: 'Cross-rhythm', label: 'Cross-rhythm' },
+
+                // Energy and Intensity Tags
+                { value: 'High Energy', label: 'High Energy' },
+                { value: 'Low Energy', label: 'Low Energy' },
+                { value: 'Building Energy', label: 'Building Energy' },
+                { value: 'Intense', label: 'Intense' },
+                { value: 'Gentle', label: 'Gentle' },
+                { value: 'Dynamic', label: 'Dynamic' },
+
+                // Emotional Mood Tags
+                { value: 'Melancholic', label: 'Melancholic' }, 
+                { value: 'Euphoric', label: 'Euphoric' }, 
+                { value: 'Nostalgic', label: 'Nostalgic' }, 
+                { value: 'Dreamy', label: 'Dreamy' }, 
+                { value: 'Aggressive', label: 'Aggressive' }, 
+                { value: 'Peaceful', label: 'Peaceful' }, 
+                { value: 'Mysterious', label: 'Mysterious' }, 
+                { value: 'Dramatic', label: 'Dramatic' },
+
+                // Performance/Mixing Details 
+                { value: 'Tight Drums', label: 'Tight Drums' },
+                { value: 'Swing Beat', label: 'Swing Beat' },
+                { value: 'Walking Bassline', label: 'Walking Bassline' },
+                { value: 'Dry Mix', label: 'Dry Mix (No Reverb)' },
+                { value: 'City Street SFX', label: 'City Street SFX' }
+            ],
+            // **[UPDATE]: Vocal Style, Technique, Character Tags Consolidated**
+            vocal: [
+                { value: '', label: '3. -- Vocal Tone/Technique (Select) --' },
+                // Styles
+                { value: 'Powerful Vocals', label: 'Powerful Vocals' },
+                { value: 'Whispered Vocals', label: 'Whispered Vocals' },
+                { value: 'Smooth Vocals', label: 'Smooth Vocals' },
+                { value: 'Harmonies', label: 'Harmonies' },
+                { value: 'Choir', label: 'Choir' },
+                // Techniques
+                { value: 'Falsetto', label: 'Falsetto' },
+                { value: 'Vibrato', label: 'Vibrato' },
+                { value: 'Melismatic', label: 'Melismatic' },
+                { value: 'Staccato Vocals', label: 'Staccato Vocals' },
+                { value: 'Legato Vocals', label: 'Legato Vocals' },
+                // Character and Action
+                { value: 'Raspy Voice', label: 'Raspy Voice' },
+                { value: 'Clear Voice', label: 'Clear Voice' },
+                { value: 'Deep Voice', label: 'Deep Voice' },
+                { value: 'High Voice', label: 'High Voice' },
+                { value: 'Soulful Voice', label: 'Soulful Voice' },
+                { value: 'Ad-libs', label: 'Ad-libs' },
+                { value: 'Shouting', label: 'Shouting' },
+                { value: 'Scat Singing', label: 'Scat Singing' },
+                { value: 'Yodeling', label: 'Yodeling' }
+            ],
+            // Instrument Categories (Expanded to include traditional instruments)
+            instrumentCategories: {
+                // Melody, Harmony (Keys, Strings, Brass/Woodwind)
+                melodyHarmony: [
+                    { value: 'Piano', label: 'Piano' },
+                    { value: 'Electric Piano', label: 'Electric Piano' },
+                    { value: 'Synthesizer', label: 'Synthesizer' },
+                    { value: 'Organ', label: 'Organ' },
+                    { value: 'Strings Section', label: 'Strings Section' },
+                    { value: 'Electric Guitar', label: 'Electric Guitar' },
+                    { value: 'Acoustic Guitar', label: 'Acoustic Guitar' },
+                    { value: 'Violin', label: 'Violin' },
+                    { value: 'Cello', label: 'Cello' },
+                    { value: 'Saxophone', label: 'Saxophone' },
+                    { value: 'Trumpet', label: 'Trumpet' },
+                    { value: 'Flute', label: 'Flute' },
+                    { value: 'Clarinet', label: 'Clarinet' }
+                ],
+                // Rhythm, Bass, Percussion
+                rhythm: [
+                    { value: 'Bass Guitar', label: 'Bass Guitar' },
+                    { value: '808 Bass', label: '808 Bass' },
+                    { value: 'Drums', label: 'Full Drum Kit' },
+                    { value: 'Electronic Drums', label: 'Electronic Drums' },
+                    { value: 'Hand Percussion', label: 'Hand Percussion' },
+                    { value: 'Janggu (Korean Drum)', label: 'Janggu' },
+                    { value: 'Taiko Drums', label: 'Taiko Drums' },
+                    { value: 'Tabla', label: 'Tabla' },
+                    { value: 'Djembe', label: 'Djembe' },
+                    { value: 'Slap Bass', label: 'Slap Bass' }
+                ],
+                // Special and Regional Instruments
+                specialRegion: [
+                    { value: 'Gayageum (Korean)', label: 'Gayageum' },
+                    { value: 'Haegeum (Korean)', label: 'Haegeum' },
+                    { value: 'Daegum (Korean)', label: 'Daegum' },
+                    { value: 'Shakuhachi', label: 'Shakuhachi' },
+                    { value: 'Koto', label: 'Koto' },
+                    { value: 'Sitar', label: 'Sitar' },
+                    { value: 'Pedal Steel Guitar', label: 'Pedal Steel Guitar' }
+                ],
+                // Sound Effects and Texture (Including FX/Texture)
+                fxTexture: [
+                    { value: 'Distorted Guitar', label: 'Distorted Guitar' },
+                    { value: 'Reverb FX', label: 'Reverb FX' },
+                    { value: 'Echo Delay', label: 'Echo Delay' },
+                    { value: 'Scratching', label: 'Scratching (DJ)' },
+                    { value: 'Filtered Sweep', label: 'Filtered Sweep' },
+                    { value: 'Arpeggiator', label: 'Arpeggiator' },
+                    { value: 'Soundscape', label: 'Soundscape' },
+                    { value: 'Vinyl Hiss', label: 'Vinyl Hiss' },
+                    { value: 'Rainy Day SFX', label: 'Rainy Day SFX' },
+                    { value: 'Café Noise SFX', label: 'Café Noise SFX' }
+                ]
+            }
+        };
+
+        // B. Structure Details and Template Data (Translated)
+        const structureData = {
+            "StandardPop": {
+                desc: "The most basic and successful structure. Builds tension in the [Bridge] before the final explosive chorus.",
+                sections: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Verse 2', 'Pre-Chorus', 'Chorus', 'Bridge', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy)\n<Intro lyric line>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<Verse 1 lyrics 4 lines>',
+                    'Pre-Chorus': '[Pre-Chorus] (Building Energy)\n<Pre-Chorus lyrics 2 lines>',
+                    'Chorus': '[Chorus] (High Energy)\n<Chorus lyrics 4 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Bridge': '[Bridge] (Gentle, Mood Switch)\n<Bridge lyrics 2 lines>',
+                    'Outro': '[Outro] (Fade out)\n<Outro lyric line>'
+                }
+            },
+            "HookFocusPop": {
+                desc: "Presents the chorus (hook) immediately after the intro to instantly captivate the audience.",
+                sections: ['Intro', 'Chorus', 'Verse 1', 'Chorus', 'Verse 2', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Short Hook Motif)\n<Intro lyric line>',
+                    'Chorus': '[Chorus] (High Energy)\n<Chorus lyrics 4 lines>',
+                    'Verse 1': '[Verse 1] (Medium Energy, Subtle)\n<Verse 1 lyrics 4 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Outro': '[Outro] (Low Energy, Vocal Ad-libs, Fade out)\n<Outro lyric line>'
+                }
+            },
+            "KPopDance": {
+                desc: "Complex, emphasizing rhythm and mood shifts with [Post-Chorus] and [Dance Break].",
+                sections: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Post-Chorus', 'Verse 2', 'Pre-Chorus', 'Chorus', 'Dance Break', 'Bridge', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Synth Riser)\n<Intro lyric line>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<Verse 1 lyrics 3 lines>',
+                    'Pre-Chorus': '[Pre-Chorus] (Building Energy, Tension)\n<Pre-Chorus lyrics 2 lines>',
+                    'Chorus': '[Chorus] (High Energy)\n<Chorus lyrics 4 lines>',
+                    'Post-Chorus': '[Post-Chorus] (Explosive Energy, Rhythm Switch)\n<Post-Chorus lyrics 2 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy, Rap Focus)\n<Verse 2 rap lyrics 3 lines>',
+                    'Dance Break': '[Dance Break] (Intense, Heavy Beat, No Vocals)',
+                    'Bridge': '[Bridge] (Gentle, Mood Switch)\n<Bridge lyrics 2 lines>',
+                    'Outro': '[Outro] (High Energy, FX Fade)\n<Outro lyric line>'
+                }
+            },
+            "ClassicRock": {
+                desc: "Places the solo part between the chorus and bridge, balancing the song's center.",
+                sections: ['Intro', 'Verse 1', 'Chorus', 'Verse 2', 'Chorus', 'Guitar Solo', 'Bridge', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Medium Energy, Guitar Riff)\n<Intro lyric line>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus': '[Chorus] (High Energy, Powerful)\n<Chorus lyrics 4 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Guitar Solo': '[Guitar Solo] (Intense, Distorted, Harmonic Minor)',
+                    'Bridge': '[Bridge] (Gentle, New Chord Progression)\n<Bridge lyrics 2 lines>',
+                    'Outro': '[Outro] (High Energy, Drum Fill)\n<Outro lyric line>'
+                }
+            },
+            "AlternativeGrunge": {
+                desc: "Expresses emotional explosion through extreme Soft/Loud dynamic contrast.",
+                sections: ['Intro', 'Verse 1 (Soft)', 'Chorus (Loud)', 'Verse 2 (Soft)', 'Chorus (Loud)', 'Bridge (Quiet)', 'Climactic Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Quiet Guitar)',
+                    'Verse 1 (Soft)': '[Verse 1] (Low Energy, Gentle, Clean Guitar)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus (Loud)': '[Chorus] (Explosive Energy, Intense, Heavy Distortion)\n<Chorus lyrics 4 lines>',
+                    'Verse 2 (Soft)': '[Verse 2] (Low Energy, Clean Guitar)\n<Verse 2 lyrics 4 lines>',
+                    'Bridge (Quiet)': '[Bridge] (Low Energy, Gentle, Bassline Focus)\n<Bridge lyrics 2 lines>',
+                    'Climactic Chorus': '[Chorus] (Intense, Explosive Energy, Max Volume)\n<Final Chorus 4 lines>',
+                    'Outro': '[Outro] (Low Energy, Feedback, Fade)\n<Outro lyric line>'
+                }
+            },
+            "ProgressiveRock": {
+                desc: "Minimizes repetition, inserting new musical elements and complex interludes in each section.",
+                sections: ['Long Intro', 'Verse 1', 'Interlude', 'Verse 2', 'Chorus', 'Instrumental Break', 'Verse 3 (New Theme)', 'Coda'],
+                template: {
+                    'Long Intro': '[Long Intro] (Dynamic, Changing Time Signature)\n<Intro 2 lines>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<Verse 1 lyrics 5 lines>',
+                    'Interlude': '[Interlude] (Intense, Keyboard Solo, Odd Meter)',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 5 lines>',
+                    'Chorus': '[Chorus] (High Energy, Symphonic)\n<Chorus lyrics 4 lines>',
+                    'Instrumental Break': '[Instrumental Break] (Intense, Technical Guitar/Drum)',
+                    'Verse 3 (New Theme)': '[Verse 3] (Medium Energy, New Chord Progression)\n<Verse 3 lyrics 4 lines>',
+                    'Coda': '[Coda] (Powerful, Orchestral Finish)\n<Outro 1 line>'
+                }
+            },
+            "StandardHipHop": {
+                desc: "Focuses on the content of the rap (Verse) rather than melody; the hook is short and repetitive.",
+                sections: ['Intro', 'Verse 1', 'Hook', 'Verse 2', 'Hook', 'Verse 3', 'Hook', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Medium Energy, Beat Drop)',
+                    'Verse 1': '[Verse 1] (Medium Energy, Aggressive Rap)\n<Verse 1 rap lyrics 6 lines>',
+                    'Hook': '[Hook] (High Energy, Short, Repetitive)\n<Hook lyrics 2 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy, Storytelling Rap)\n<Verse 2 rap lyrics 6 lines>',
+                    'Verse 3': '[Verse 3] (Medium Energy, Freestyle feel)\n<Verse 3 rap lyrics 6 lines>',
+                    'Outro': '[Outro] (Low Energy, Beat Fade)\n<Outro lyric line>'
+                }
+            },
+            "R&BSoul": {
+                desc: "Builds emotion like a ballad, but rhythm and groove are emphasized, and [Ad-libs] are important.",
+                sections: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Verse 2', 'Chorus', 'Bridge (Vocal Ad-libs)', 'Chorus x2', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Rhodes/Bass)\n<Intro lyric line>',
+                    'Verse 1': '[Verse 1] (Medium Energy, Subtle)\n<Verse 1 lyrics 4 lines>',
+                    'Pre-Chorus': '[Pre-Chorus] (Building Energy, Harmony)\n<Pre-Chorus lyrics 2 lines>',
+                    'Chorus': '[Chorus] (Medium Energy, Powerful)\n<Chorus lyrics 4 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Bridge (Vocal Ad-libs)': '[Bridge] (Low Energy, Gentle, Vocal Ad-libs, Harmony Focus)\n<Bridge lyrics 2 lines>',
+                    'Chorus x2': '[Chorus] (High Energy, Climactic)\n<Final Chorus 8 lines>',
+                    'Outro': '[Outro] (Low Energy, Fade out)\n<Outro lyric line>'
+                }
+            },
+            "TrapStreet": {
+                desc: "Emphasizes a heavy beat and drum sound (Beat Drop). Structure is simple and repetitive.",
+                sections: ['Beat Drop Intro', 'Hook', 'Verse 1', 'Hook', 'Instrumental Break', 'Verse 2', 'Hook', 'Outro'],
+                template: {
+                    'Beat Drop Intro': '[Intro] (Explosive Energy, Heavy 808 Bass, Beat Drop)',
+                    'Hook': '[Hook] (High Energy, Short, Repetitive, Auto-tuned Vocals)\n<Hook lyrics 2 lines>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<Verse 1 rap lyrics 4 lines>',
+                    'Instrumental Break': '[Instrumental Break] (Intense, Beat Variation, Hi-Hat Roll)',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 rap lyrics 4 lines>',
+                    'Outro': '[Outro] (Low Energy, Beat Fade, FX Stop)\n<Outro 1 line>'
+                }
+            },
+            "HouseTechno": {
+                desc: "Minimal vocals, focusing on the repetition and variation of rhythm and bassline.",
+                sections: ['Long Intro', 'Build-up', 'Drop', 'Breakdown (Quiet)', 'Build-up', 'Drop', 'Outro (Fade Out)'],
+                template: {
+                    'Long Intro': '[Intro] (Medium Energy, BPM 128, Filter Sweep)',
+                    'Build-up': '[Build-up] (Building Energy, Snare Roll, Riser FX)',
+                    'Drop': '[Drop] (High Energy, Heavy Kick, Synth Bassline)',
+                    'Breakdown (Quiet)': '[Breakdown] (Low Energy, Gentle, Ambient Synth Pad)',
+                    'Outro (Fade Out)': '[Outro] (Low Energy, Fade Out, Delay FX)'
+                }
+            },
+            "TranceDubstep": {
+                desc: "Clearly distinguishes the melodic breakdown (emotional interlude) from the explosive drop.",
+                sections: ['Intro', 'Verse', 'Chorus', 'Breakdown (Ambient)', 'Climactic Build-up', 'The Drop', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Trance Synth Lead)',
+                    'Verse': '[Verse] (Medium Energy, Vocal, Arpeggiator)\n<Lyrics 4 lines>',
+                    'Chorus': '[Chorus] (High Energy, Melodic, Layered Synth)\n<Chorus 4 lines>',
+                    'Breakdown (Ambient)': '[Breakdown] (Low Energy, Gentle, Long Reverb)',
+                    'Climactic Build-up': '[Build-up] (Building Energy, Snare Roll, High Pass Filter)',
+                    'The Drop': '[Drop] (Explosive Energy, Intense, Heavy Bass, Wide Stereo FX)',
+                    'Outro': '[Outro] (Low Energy, Echo Delay, Fade Out)'
+                }
+            },
+            "LoFiAmbient": {
+                desc: "Quiet and repetitive structure. Focuses on mood and atmosphere without strong vocals or instruments.",
+                sections: ['Intro', 'Loop 1', 'Loop 2 (Variation)', 'Loop 3 (Quiet)', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Gentle, Vinyl Hiss)',
+                    'Loop 1': '[Loop 1] (Medium Energy, Subtle, Hip-Hop Beat)\n<Melody Loop>',
+                    'Loop 2 (Variation)': '[Loop 2] (Medium Energy, Subtle Variation, Piano Solo)\n<Melody Loop Variation>',
+                    'Loop 3 (Quiet)': '[Loop 3] (Low Energy, Gentle, Ambient Pad)\n<Quiet Melody Loop>',
+                    'Outro': '[Outro] (Low Energy, Fade Out)'
+                }
+            },
+            "StandardBlues": {
+                desc: "Repeats the 12-bar blues chord progression, emphasizing improvised solos (Improv Solo).",
+                sections: ['Intro', 'Verse 1', 'Verse 2', 'Improv Solo (Guitar)', 'Verse 3', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Medium Energy, Blues Riff)\n<Intro lyric line>',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<Verse 1 lyrics 3 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 3 lines>',
+                    'Improv Solo (Guitar)': '[Guitar Solo] (Dynamic, Improv Solo)',
+                    'Verse 3': '[Verse 3] (Medium Energy, Powerful Vocals)\n<Verse 3 lyrics 3 lines>',
+                    'Outro': '[Outro] (Fade out, Harmonica Fade)\n<Outro 1 line>'
+                }
+            },
+            "JazzStandard": {
+                desc: "AABA form, with a clear distinction between the [Head] and [Solo] sections.",
+                sections: ['Intro', 'Head (AABA)', 'Solo 1 (Piano)', 'Solo 2 (Saxophone)', 'Head (AABA)', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Subtle, Piano Solo)\n<Intro lyric line>',
+                    'Head (AABA)': '[Head] (Medium Energy, Bossa Nova Rhythm, Male Vocals)\n<Theme lyrics 4 lines>',
+                    'Solo 1 (Piano)': '[Piano Solo] (Dynamic, Improvisational)',
+                    'Solo 2 (Saxophone)': '[Saxophone Solo] (Intense, High Energy)',
+                    'Outro': '[Outro] (Low Energy, Gentle, Fade out)\n<Outro 1 line>'
+                }
+            },
+            "CinematicScore": {
+                desc: "Builds tension and creates an emotional climax using orchestral sounds.",
+                sections: ['Quiet Opening', 'Tension Build-up (Low)', 'Theme Introduction (Medium)', 'Climax (High)', 'Resolution/Coda (Low)'],
+                template: {
+                    'Quiet Opening': '[Intro] (Low Energy, Gentle, Ambient Soundscape, Strings Section)',
+                    'Tension Build-up (Low)': '[Tension Build] (Building Energy, Subtle, Timpani)',
+                    'Theme Introduction (Medium)': '[Main Theme] (Medium Energy, Powerful, Trumpet Lead)\n<Theme description 2 lines>',
+                    'Climax (High)': '[Climax] (Explosive Energy, Intense, Full Orchestra, Choir)',
+                    'Resolution/Coda (Low)': '[Resolution] (Low Energy, Gentle, Piano)\n<Outro 1 line>'
+                }
+            },
+            "ModernClassical": {
+                desc: "Uses Movement division to create various tempos and atmospheres.",
+                sections: ['Movement 1 (Adagio)', 'Movement 2 (Allegro)', 'Movement 3 (Andante)', 'Movement 4 (Presto)'],
+                template: {
+                    'Movement 1 (Adagio)': '[Movement 1] (Low Energy, Melancholic, Strings Section, Cello Focus)',
+                    'Movement 2 (Allegro)': '[Movement 2] (High Energy, Intense, Dynamic, Fast Tempo, Full Orchestra)',
+                    'Movement 3 (Andante)': '[Movement 3] (Medium Energy, Peaceful, Flute Solo)',
+                    'Movement 4 (Presto)': '[Movement 4] (Explosive Energy, Powerful, Timpani, Climactic)'
+                }
+            },
+            "StandardTrot": {
+                desc: "The traditional Korean Trot rhythm and structure. Uses an Instrumental Break for mood shift.",
+                sections: ['Intro (Instrumental)', 'Verse 1', 'Chorus (Hook)', 'Instrumental Break', 'Verse 2', 'Chorus (Hook)', 'Outro'],
+                template: {
+                    'Intro (Instrumental)': '[Intro] (Medium Energy, Synth Riff)',
+                    'Verse 1': '[Verse 1] (Medium Energy)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus (Hook)': '[Chorus] (High Energy, Powerful Vocals)\n<Chorus lyrics 4 lines>',
+                    'Instrumental Break': '[Instrumental Break] (Dynamic, Saxophone Solo)',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Outro': '[Outro] (Explosive Energy, Fade out)\n<Outro 1 line>'
+                }
+            },
+            "DanceTrot": {
+                desc: "Modern Trot infused with EDM/Dance beats. Features a repetitive hook and strong beat.",
+                sections: ['Intro (Beat Drop)', 'Hook', 'Verse 1 (Rap/Vocal)', 'Hook', 'Dance Break (Heavy Beat)', 'Bridge', 'Hook x2', 'Outro'],
+                template: {
+                    'Intro (Beat Drop)': '[Intro] (High Energy, Beat Drop, Techno FX)',
+                    'Hook': '[Hook] (High Energy, Powerful)\n<Hook lyrics 4 lines>',
+                    'Verse 1 (Rap/Vocal)': '[Verse 1] (Medium Energy, Aggressive Rap)\n<Verse 1 lyrics 3 lines>',
+                    'Dance Break (Heavy Beat)': '[Dance Break] (Intense, Electronic Drums, Synth Lead)',
+                    'Bridge': '[Bridge] (Low Energy, Gentle, Mood Switch)\n<Bridge lyrics 2 lines>',
+                    'Hook x2': '[Chorus] (Explosive Energy, Max Volume)\n<Final Chorus 8 lines>',
+                    'Outro': '[Outro] (High Energy, FX Stop)\n<Outro 1 line>'
+                }
+            },
+            "SlowTrot": {
+                desc: "A ballad-style Trot emphasizing melancholy and emotion. Clear development with potential for [Pansori Vocal] tag.",
+                sections: ['Intro (Quiet)', 'Verse 1', 'Chorus', 'Instrumental Break (Haegeum)', 'Verse 2', 'Climactic Chorus', 'Outro (Fade Out)'],
+                template: {
+                    'Intro (Quiet)': '[Intro] (Low Energy, Gentle, Piano/Haegeum)',
+                    'Verse 1': '[Verse 1] (Low Energy, Emotional)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus': '[Chorus] (Medium Energy, Powerful Vocals)\n<Chorus lyrics 4 lines>',
+                    'Instrumental Break (Haegeum)': '[Instrumental Break] (Melancholic, Dynamic, Haegeum Solo)',
+                    'Verse 2': '[Verse 2] (Building Energy, Emotional)\n<Verse 2 lyrics 4 lines>',
+                    'Climactic Chorus': '[Chorus] (High Energy, Intense, Max Power)\n<Final Chorus 4 lines>',
+                    'Outro (Fade Out)': '[Outro] (Low Energy, Subtle, Piano Fade)\n<Outro 1 line>'
+                }
+            },
+            "PowerBallad": {
+                desc: "Achieves maximum explosion and drama in the chorus. Emphasizes [Key Change] and [Max Power].",
+                sections: ['Intro', 'Verse 1', 'Pre-Chorus', 'Chorus', 'Verse 2', 'Guitar Solo (Climactic)', 'Bridge (Quiet)', 'Key Change Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Piano)\n<Intro lyric line>',
+                    'Verse 1': '[Verse 1] (Medium Energy, Gentle)\n<Verse 1 lyrics 4 lines>',
+                    'Pre-Chorus': '[Pre-Chorus] (Building Energy)\n<Pre-Chorus lyrics 2 lines>',
+                    'Chorus': '[Chorus] (High Energy, Powerful)\n<Chorus lyrics 4 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Guitar Solo (Climactic)': '[Guitar Solo] (Intense, Dynamic)',
+                    'Bridge (Quiet)': '[Bridge] (Low Energy, Subtle)\n<Bridge lyrics 2 lines>',
+                    'Key Change Chorus': '[Chorus] (Explosive Energy, Key Change, Max Power)\n<Final Chorus 4 lines>',
+                    'Outro': '[Outro] (Powerful, Fade out)\n<Outro 1 line>'
+                }
+            },
+            "R&BBallad": {
+                desc: "Slow tempo, vocal harmony, and jazz-influenced instrumentals (Sax, Rhodes) are characteristic.",
+                sections: ['Intro (Rhodes)', 'Verse 1', 'Chorus (Harmony)', 'Interlude (Sax Solo)', 'Verse 2', 'Chorus (Ad-libs)', 'Outro'],
+                template: {
+                    'Intro (Rhodes)': '[Intro] (Low Energy, Gentle, Rhodes)\n<Intro lyric line>',
+                    'Verse 1': '[Verse 1] (Low Energy, Subtle)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus (Harmony)': '[Chorus] (Medium Energy, Vocal Harmony)\n<Chorus lyrics 4 lines>',
+                    'Interlude (Sax Solo)': '[Interlude] (Medium Energy, Saxophone Solo)',
+                    'Verse 2': '[Verse 2] (Medium Energy, Building Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Chorus (Ad-libs)': '[Chorus] (High Energy, Powerful, Vocal Ad-libs)\n<Final Chorus 4 lines>',
+                    'Outro': '[Outro] (Low Energy, Gentle, Fade out)\n<Outro 1 line>'
+                }
+            },
+            "AcousticBallad": {
+                desc: "Simple, acoustic instruments focused. Uses [Verse 3] to develop the story.",
+                sections: ['Intro', 'Verse 1', 'Chorus (Simple)', 'Verse 2', 'Instrumental Break (Guitar)', 'Verse 3', 'Chorus (Climactic)', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Acoustic Guitar)',
+                    'Verse 1': '[Verse 1] (Low Energy, Gentle)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus (Simple)': '[Chorus] (Medium Energy, Simple Drums)\n<Chorus lyrics 4 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Instrumental Break (Guitar)': '[Instrumental Break] (Medium Energy, Dynamic, Acoustic Guitar Solo)',
+                    'Verse 3': '[Verse 3] (Building Energy)\n<Verse 3 lyrics 4 lines>',
+                    'Chorus (Climactic)': '[Chorus] (High Energy, Powerful, Strings Section)\n<Final Chorus 4 lines>',
+                    'Outro': '[Outro] (Low Energy, Gentle, Piano Fade)\n<Outro 1 line>'
+                }
+            },
+            "StandardFolk": {
+                desc: "Standard folk structure. Uses an interlude for a natural flow.",
+                sections: ['Intro', 'Verse 1', 'Chorus', 'Verse 2', 'Chorus', 'Instrumental Break', 'Verse 3', 'Chorus', 'Outro'],
+                template: {
+                    'Intro': '[Intro] (Low Energy, Acoustic Guitar)\n<Intro lyric line>',
+                    'Verse 1': '[Verse 1] (Medium Energy, Gentle)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus': '[Chorus] (Medium Energy)\n<Chorus lyrics 4 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Instrumental Break': '[Instrumental Break] (Dynamic, Mandolin Solo)',
+                    'Verse 3': '[Verse 3] (Building Energy)\n<Verse 3 lyrics 4 lines>',
+                    'Outro': '[Outro] (Low Energy, Gentle, Fade out)\n<Outro 1 line>'
+                }
+            },
+            "BluegrassIrish": {
+                desc: "Fast tempo, emphasizing fast solos (Fast Solo) and rhythm changes (Breakdown) of string instruments (fiddle, banjo).",
+                sections: ['Intro (Fast)', 'Verse 1', 'Chorus', 'Fast Solo (Banjo)', 'Breakdown (Quiet)', 'Verse 2', 'Chorus', 'Outro'],
+                template: {
+                    'Intro (Fast)': '[Intro] (High Energy, Fast Tempo, Fiddle Lead)',
+                    'Verse 1': '[Verse 1] (High Energy, Dynamic)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus': '[Chorus] (High Energy, Powerful)\n<Chorus lyrics 4 lines>',
+                    'Fast Solo (Banjo)': '[Banjo Solo] (Explosive Energy, Intense, Fast Solo)',
+                    'Breakdown (Quiet)': '[Breakdown] (Low Energy, Gentle, Rhythm Switch)',
+                    'Verse 2': '[Verse 2] (High Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Outro': '[Outro] (High Energy, Fade out)\n<Outro 1 line>'
+                }
+            },
+            "NarrativeCountry": {
+                desc: "Structure for telling a long story. Pedal steel guitar sets the mood, with focus on vocals.",
+                sections: ['Intro (Pedal Steel)', 'Verse 1 (Story)', 'Chorus', 'Verse 2 (Detail)', 'Interlude (Pedal Steel)', 'Verse 3 (Climactic Story)', 'Chorus', 'Outro'],
+                template: {
+                    'Intro (Pedal Steel)': '[Intro] (Low Energy, Gentle, Pedal Steel Guitar)',
+                    'Verse 1 (Story)': '[Verse 1] (Medium Energy, Subtle)\n<Verse 1 story 4 lines>',
+                    'Chorus': '[Chorus] (High Energy, Powerful)\n<Chorus lyrics 4 lines>',
+                    'Verse 2 (Detail)': '[Verse 2] (Medium Energy)\n<Verse 2 story 4 lines>',
+                    'Interlude (Pedal Steel)': '[Interlude] (Medium Energy, Pedal Steel Guitar Solo)',
+                    'Verse 3 (Climactic Story)': '[Verse 3] (Building Energy, Emotional, Story Climax)\n<Verse 3 story 4 lines>',
+                    'Outro': '[Outro] (Low Energy, Gentle, Fade out)\n<Outro 1 line>'
+                }
+            },
+            "StandardReggae": {
+                desc: "Slow tempo, heavy bass, and off-beat guitar (Skank). Utilizes [Dub Break] and [Toasting].",
+                sections: ['Intro (Dub FX)', 'Verse 1', 'Chorus', 'Verse 2', 'Dub Break (Instrumental)', 'Toasting (Vocal FX)', 'Chorus', 'Outro'],
+                template: {
+                    'Intro (Dub FX)': '[Intro] (Low Energy, Dub FX, Bassline Focus)',
+                    'Verse 1': '[Verse 1] (Medium Energy, Subtle)\n<Verse 1 lyrics 4 lines>',
+                    'Chorus': '[Chorus] (Medium Energy, Powerful)\n<Chorus lyrics 4 lines>',
+                    'Verse 2': '[Verse 2] (Medium Energy)\n<Verse 2 lyrics 4 lines>',
+                    'Dub Break (Instrumental)': '[Dub Break] (Low Energy, Echo Delay, Instrumental)',
+                    'Toasting (Vocal FX)': '[Toasting] (Dynamic, Vocal FX, Rap/Chant)',
+                    'Outro': '[Outro] (Low Energy, Fade out, Delay FX)'
+                }
+            }
+        };
+
+
+        /* -----------------------------------------------------------
+        // C. JavaScript Logic (Event Listener Modified)
+        ----------------------------------------------------------- */
+
+        // Add event listeners to all checkboxes and input fields
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input[type="checkbox"], input[type="text"], select');
+            inputs.forEach(input => {
+                // Checkboxes and select fields call generatePrompt on 'change'
+                input.addEventListener('change', generatePrompt);
+                // Text fields remain independent, relying on the 'Final Prompt Generation' button
+            });
+            // Add keyup event to the final lyrics output area for real-time update (of lyrics content)
+            document.getElementById('outputLyrics').addEventListener('keyup', generatePrompt);
+            
+            // Initial prompt generation (even if empty)
+            generatePrompt();
+        });
+
+
+        // Function to create section-specific instrument/FX checkboxes
+        function createInstrumentCheckboxes(sectionName, category, instruments) {
+            const container = document.createElement('div');
+            container.classList.add('instrument-multiselect');
+            
+            const titleMap = {
+                melodyHarmony: '🎵 Melody/Harmony (Keys, Strings, Brass/Woodwind)',
+                rhythm: '🥁 Rhythm/Bass/Percussion (Drums, Bass, Percussion)',
+                specialRegion: '🌎 Special/Regional Instruments',
+                fxTexture: '⚙️ Sound Effects/Texture'
+            };
+
+            container.innerHTML = `<h4>${titleMap[category]}</h4><div class="instrument-list"></div>`;
+            const listDiv = container.querySelector('.instrument-list');
+
+            instruments.forEach(inst => {
+                const inputId = `inst-${sectionName}-${inst.value.replace(/\s/g, '-')}`;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = inputId;
+                checkbox.name = `${sectionName}_instrument`;
+                checkbox.value = inst.value;
+                checkbox.addEventListener('change', generatePrompt);
+
+                const label = document.createElement('label');
+                label.htmlFor = inputId;
+                label.textContent = inst.label;
+
+                listDiv.appendChild(checkbox);
+                listDiv.appendChild(label);
+            });
+
+            return container;
+        }
+
+
+        // Function to update section detail input fields based on the selected structure
+        function updateSectionDetails(structureKey) {
+            const container = document.getElementById('section-details-container');
+            const desc = document.getElementById('structureDesc');
+            container.innerHTML = '';
+            
+            if (!structureKey) {
+                desc.textContent = "Selected structure features: Please select a structure type.";
+                return;
+            }
+
+            const data = structureData[structureKey];
+            desc.textContent = `Selected structure features: ${data.desc}`;
+
+            data.sections.forEach(sectionName => {
+                const detailDiv = document.createElement('div');
+                detailDiv.classList.add('section-detail');
+                
+                // Section Title (e.g., [Chorus])
+                const sectionTitle = document.createElement('label');
+                sectionTitle.textContent = `[${sectionName.toUpperCase()}] Section Tag Specification`;
+                detailDiv.appendChild(sectionTitle);
+
+                // Combobox Row
+                const detailRow = document.createElement('div');
+                detailRow.classList.add('detail-row');
+
+                // 1. BPM/Tempo Select
+                const tempoSelect = document.createElement('select');
+                tempoSelect.name = `${sectionName}_tempo`;
+                detailOptions.tempo.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    tempoSelect.appendChild(option);
+                });
+                tempoSelect.addEventListener('change', generatePrompt);
+                detailRow.appendChild(tempoSelect);
+
+                // 2. Rhythm/Meter/Mood Select
+                const rhythmMoodSelect = document.createElement('select');
+                rhythmMoodSelect.name = `${sectionName}_rhythm_mood`;
+                detailOptions.rhythmAndMood.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    rhythmMoodSelect.appendChild(option);
+                });
+                rhythmMoodSelect.addEventListener('change', generatePrompt);
+                detailRow.appendChild(rhythmMoodSelect);
+
+                // 3. Vocal Tone/Technique Select
+                const vocalSelect = document.createElement('select');
+                vocalSelect.name = `${sectionName}_vocal`;
+                detailOptions.vocal.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    vocalSelect.appendChild(option);
+                });
+                vocalSelect.addEventListener('change', generatePrompt);
+                detailRow.appendChild(vocalSelect);
+
+                detailDiv.appendChild(detailRow);
+
+                // Instrument Multi-select Area
+                for (const category in detailOptions.instrumentCategories) {
+                    const instruments = detailOptions.instrumentCategories[category];
+                    const instrumentCheckboxes = createInstrumentCheckboxes(sectionName, category, instruments);
+                    detailDiv.appendChild(instrumentCheckboxes);
+                }
+
+                container.appendChild(detailDiv);
+            });
+            // When structure changes, initialize the lyric template
+            setInitialLyricsTemplate(structureKey); 
+            generatePrompt(); // Regenerate prompt immediately after creating fields
+        }
+
+        /**
+         * Sets the initial lyric template (executed once when structure is selected).
+         */
+        function setInitialLyricsTemplate(structureKey) {
+            const outputLyrics = document.getElementById('outputLyrics');
+            const data = structureData[structureKey];
+            let initialTemplate = '';
+
+            data.sections.forEach(sectionName => {
+                const baseTemplate = data.template[sectionName] || `[${sectionName.toUpperCase()}]\n<${sectionName} lyrics>`;
+                const lines = baseTemplate.split('\n');
+                // Extract only the tag part and use the lyric part as template
+                const tagLine = lines[0];
+                const lyricLines = lines.slice(1).join('\n');
+                initialTemplate += `${tagLine}\n${lyricLines}\n\n`;
+            });
+            outputLyrics.value = initialTemplate.trim();
+        }
+
+
+        // Core function to generate the final prompt and update output fields
+        function generatePrompt() {
+            const styleTags = [];
+            const selectedGenre = [];
+            
+            // 1. Collect Overall Style Tags (Style of Music)
+            const styleCheckboxes = document.querySelectorAll('#style-selection input[type="checkbox"]:checked');
+            styleCheckboxes.forEach(checkbox => {
+                const value = checkbox.value.trim();
+                if (value) {
+                    styleTags.push(value);
+                    if (checkbox.name === 'genre') {
+                        selectedGenre.push(value);
+                    }
+                }
+            });
+
+            // Add Vocal Gender/Type
+            const overallVocal = document.getElementById('overallVocalGender').value;
+            if (overallVocal && overallVocal !== 'No Vocals') {
+                styleTags.push(overallVocal);
+            }
+            if (overallVocal === 'No Vocals') {
+                 styleTags.push('No Vocals');
+            }
+
+
+            // Add BPM
+            const overallBpm = document.getElementById('overallBpm').value.trim();
+            let bpmTag = '';
+            if (overallBpm && !isNaN(parseInt(overallBpm))) {
+                bpmTag = `BPM ${overallBpm}`;
+                styleTags.push(bpmTag);
+            }
+
+            // Remove duplicates and create final style string
+            const uniqueStyleTags = [...new Set(styleTags)].join(', ');
+            document.getElementById('outputStyle').value = uniqueStyleTags;
+
+
+            // 2. Collect Song Structure Template and Section Details (Lyrics Template)
+            const structureType = document.getElementById('structureType').value;
+            const outputLyrics = document.getElementById('outputLyrics');
+            
+            if (!structureType || !structureData[structureType]) {
+                outputLyrics.value = "Please select a song structure type and fill in the lyrics within the angle brackets.";
+                return;
+            }
+
+            const data = structureData[structureType];
+            const sections = data.sections;
+            const currentLyricsContent = outputLyrics.value.trim();
+            
+            // Parse current lyrics text to map section names and lyric content
+            const currentSections = {};
+            let currentSectionName = null;
+            let currentLyricLines = [];
+
+            // Existing lyric parsing logic
+            currentLyricsContent.split('\n').forEach(line => {
+                // Identify section tag line: [SECTION NAME] or [SECTION NAME] (TAGS)
+                const tagMatch = line.match(/^\[([\w\s\-\/]+)\](?:\s*\((.*)\))?$/); 
+
+                if (tagMatch) {
+                    // Save previous section (if not the first section or if not empty)
+                    if (currentSectionName !== null) {
+                        currentSections[currentSectionName] = currentLyricLines.join('\n');
+                    }
+                    // Start new section
+                    // Save only the pure section name, excluding content inside tags
+                    currentSectionName = tagMatch[1].toUpperCase().trim(); 
+                    currentLyricLines = [];
+                } else if (line.trim() !== '' || currentSectionName !== null) {
+                    // Lines that are not tags are considered lyric content (including blank lines to maintain original)
+                    currentLyricLines.push(line);
+                }
+            });
+            // Save the last section
+            if (currentSectionName !== null) {
+                currentSections[currentSectionName] = currentLyricLines.join('\n');
+            }
+            
+
+            // Generate new template (only update tags)
+            let newLyricsTemplate = '';
+
+            sections.forEach(sectionName => {
+                const upperSectionName = sectionName.toUpperCase();
+                
+                // Collect section-specific tags
+                const sectionTags = [];
+                
+                // Combobox Tags (Tempo, Mood/Rhythm, Vocal)
+                const tempoSelect = document.querySelector(`select[name="${sectionName}_tempo"]`);
+                const rhythmMoodSelect = document.querySelector(`select[name="${sectionName}_rhythm_mood"]`);
+                const vocalSelect = document.querySelector(`select[name="${sectionName}_vocal"]`);
+
+                const tempoTag = tempoSelect ? tempoSelect.value : '';
+                const rhythmMoodTag = rhythmMoodSelect ? rhythmMoodSelect.value : '';
+                const vocalTag = vocalSelect ? vocalSelect.value : '';
+                
+                if (tempoTag) sectionTags.push(tempoTag);
+                if (rhythmMoodTag) sectionTags.push(rhythmMoodTag);
+                if (vocalTag) sectionTags.push(vocalTag);
+
+                // Instrument Multi-select Tags
+                const instrumentCheckboxes = document.querySelectorAll(`input[name="${sectionName}_instrument"]:checked`);
+                const instrumentTags = Array.from(instrumentCheckboxes).map(cb => cb.value);
+                
+                if (instrumentTags.length > 0) {
+                    sectionTags.push(instrumentTags.join(', '));
+                }
+
+                // Insert tags into the final line
+                let finalSectionLine = `[${upperSectionName}]`;
+                if (sectionTags.length > 0) {
+                    finalSectionLine = `[${upperSectionName}] (${sectionTags.join(', ')})`;
+                }
+
+                // Retrieve existing lyric content (use template lyric content if not found)
+                let lyricContent = '';
+                // Use the original section name (e.g., Verse 1 (Soft)) as the key
+                const originalKey = sectionName.toUpperCase(); 
+
+                if (currentSections[originalKey] !== undefined) {
+                    // Use the currently edited lyric content
+                    lyricContent = currentSections[originalKey];
+                } else {
+                    // Use the lyric part (angle brackets) of the initial template
+                    const baseTemplateLines = data.template[sectionName].split('\n');
+                    lyricContent = baseTemplateLines.slice(1).join('\n');
+                }
+                
+                // Add two blank lines between sections for readability
+                newLyricsTemplate += `${finalSectionLine}\n${lyricContent.trim()}\n\n`; 
+            });
+            
+            // Reflect final result
+            outputLyrics.value = newLyricsTemplate.trim();
+        }
+
+    </script>
+</body>
+</html>
